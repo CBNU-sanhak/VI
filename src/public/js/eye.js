@@ -45,27 +45,30 @@ const DrawEyeResult = (left, right) => {
     rightctx.strokeStyle = "000000";
 
     let left_Xsum=left_Ysum=right_Xsum=right_Ysum = 0;
-    const array_len = left_eye_list.length;
-    console.log(array_len);
-    for (let i = 1; i < array_len; i++) {
+    const left_len = left_eye_list.length;
+    for (let i = 0; i < left_len; i++) {
       left_Xsum += left_eye_list[i].x;
       left_Ysum += left_eye_list[i].y;
+    }
+    const right_len = right_eye_list.length;
+    for (let i = 0; i < right_len; i++) {
       right_Xsum += right_eye_list[i].x;
       right_Ysum += right_eye_list[i].y;
     }
 
-    const left_avg = {x:left_Xsum/array_len, y: left_Ysum/array_len};
-    const right_avg = {x:right_Xsum/array_len, y: right_Ysum/array_len};
+    const left_avg = {x:left_Xsum/left_len, y: left_Ysum/left_len};
+    const right_avg = {x:right_Xsum/right_len, y: right_Ysum/right_len};
+
 
     
-    for (let i = 1; i < array_len; i++) {
+    for (let i = 1; i < left_len; i++) {
       leftctx.beginPath();
       leftctx.arc(left_eye_list[i].x - left_avg.x + 250,left_eye_list[i].y - left_avg.y + 250,5,0,2 * Math.PI);
       leftctx.stroke();
       leftctx.fill();
     }
 
-    for (let i = 1; i < array_len; i++) {
+    for (let i = 1; i < right_len; i++) {
       rightctx.beginPath();
       rightctx.arc(right_eye_list[i].x - right_avg.x + 250,right_eye_list[i].y - right_avg.y + 250,5,0,2 * Math.PI);
       rightctx.stroke();
