@@ -25,10 +25,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
-app.get('/', function(req, res){
-    console.log('hi');
-    res.sendFile( path.join(path.dirname(__dirname), 'VI-front/build/index.html') )
-})
+
 
 //질문 제출 시 텍스트파일로 저장
 app.post('/submit', (req,res) => {
@@ -134,8 +131,8 @@ app.get("/test2", (req, res) => res.sendFile(__dirname +'/views/test2.html'));
 
 
 //app.get("/", (req, res) => res.sendFile(__dirname +'/views/index.html'));
-app.get("/", (req, res) => res.sendFile(__dirname +'/views/test.html'));
-app.use(express.urlencoded({extended: true}));
+// app.get("/", (req, res) => res.sendFile(__dirname +'/views/test.html'));
+// app.use(express.urlencoded({extended: true}));
 //app.get("/*", (req, res) => res.redirect("/"));   11.06 통합과정 주석처리
 
 //추가
@@ -160,6 +157,11 @@ app.get('/interview2', (req,res)=>{
 })
 app.get('/annyang', (req,res)=>{
     res.sendFile(__dirname +'/views/annyang.html')
+})
+
+app.get('/*', function(req, res){
+    console.log('hi');
+    res.sendFile( path.join(path.dirname(__dirname), 'VI-front/build/index.html') )
 })
 
 
