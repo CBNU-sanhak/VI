@@ -5,7 +5,9 @@
   "license": "ISC",
   "main": "server.js",
   "scripts": {
+    "client":"cd VI-front && npm start",
     "dev": "nodemon",
+    "start": "concurrently --kill-others-on-fail \"npm run client\" \"npm run dev\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

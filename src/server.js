@@ -11,6 +11,9 @@ const app = express();
 app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
 
+const path = require('path');
+const parentDirPath = path.dirname(__dirname);
+app.use( '/react', express.static(parentDirPath + '/VI-front/build'));
 app.use("/public", express.static(__dirname + "/public"));
 app.use("/speech", express.static(__dirname + "/speech"));
 app.use('/images', express.static(__dirname + '/images'));
@@ -20,6 +23,12 @@ app.use('/models', express.static(__dirname + '/models'));
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+
+
+app.get('/', function(req, res){
+    console.log('hi');
+    res.sendFile( path.join(path.dirname(__dirname), 'VI-front/build/index.html') )
+})
 
 //질문 제출 시 텍스트파일로 저장
 app.post('/submit', (req,res) => {
