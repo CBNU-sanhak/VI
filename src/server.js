@@ -13,7 +13,7 @@ app.set("views", __dirname + "/views");
 
 const path = require('path');
 const parentDirPath = path.dirname(__dirname);
-app.use( '/react', express.static(parentDirPath + '/VI-front/build'));
+app.use( '/react', express.static(parentDirPath + '/sanhak/build'));
 app.use("/public", express.static(__dirname + "/public"));
 app.use("/speech", express.static(__dirname + "/speech"));
 app.use('/images', express.static(__dirname + '/images'));
@@ -161,7 +161,7 @@ app.get('/annyang', (req,res)=>{
 
 app.get('/*', function(req, res){
     console.log('hi');
-    res.sendFile( path.join(path.dirname(__dirname), 'VI-front/build/index.html') )
+    res.sendFile( path.join(path.dirname(__dirname), 'sanhak/build/index.html') )
 })
 
 
