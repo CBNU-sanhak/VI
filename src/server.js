@@ -1,25 +1,53 @@
-import http from "http";
-import SocketIO from "socket.io"
-import express from "express";
-
-// const mysql = require('mysql');
-// const dbconfig = require('./config/db.js');
-// const connection =  mysql.createConnection(dbconfig);
+const http = require("http");
+const SocketIO = require("socket.io");
+const express = require("express");
+const pool = require("./mysql/index.js");
+const session = require('express-session');
+const crypto = require('./crypto/crypto.js');
+const cors = require("cors");
+const MemoryStore = require("memorystore")(session);
+const smtpTransport = require("./email/email.js");
+const path = require("path");
+require("dotenv").config({path : path.join(__dirname, './env/.env')});
 
 const app = express();
 
 app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
 
+const corsOptions = {
+    origin: "http://localhost:3000",
+    optionSuccessStatus: 200,
+    credentials: true,
+}
+
+app.use(cors(corsOptions));
+
+app.use(session({
+    secret: "awdzxcz",
+    resave: false,
+    saveUninitialized: true,
+    store: new MemoryStore({
+        checkPeriod: 86400000,
+  }),
+    cookie: { maxAge: 86400000 },
+}));
+
+
 app.use("/public", express.static(__dirname + "/public"));
 app.use("/speech", express.static(__dirname + "/speech"));
 app.use('/images', express.static(__dirname + '/images'));
 app.use('/models', express.static(__dirname + '/models'));
 
-
-
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({extended: true}))
+
+
+app.get("/customers", async (req, res) => {
+    const customers = await mysql.query('customerList');
+    console.log(customers);
+    res.send(customers);
+});
 
 //질문 제출 시 텍스트파일로 저장
 app.post('/submit', (req,res) => {
@@ -126,7 +154,6 @@ app.get("/test2", (req, res) => res.sendFile(__dirname +'/views/test2.html'));
 
 //app.get("/", (req, res) => res.sendFile(__dirname +'/views/index.html'));
 app.get("/", (req, res) => res.sendFile(__dirname +'/views/test.html'));
-app.use(express.urlencoded({extended: true}));
 //app.get("/*", (req, res) => res.redirect("/"));   11.06 통합과정 주석처리
 
 //추가
@@ -137,11 +164,144 @@ app.get('/interview', (req,res)=>{
     res.sendFile(__dirname +'/views/interview.html')
 })
 
-//11.9 회원가입
-app.get('/join', (req, res) => {
-    res.render("join");
+//아이디 중복 확인
+app.post('/id_check', (req, res) => {
+    let ident = req.body.ident;
+    pool.query("select * from customer where ident = ?", ident, function(err, results) {
+        if(err){
+            throw err;
+        } else{
+            if(results.length<=0){
+                res.send({data: "true"});
+            }
+            else{
+                res.send({data: "false"});
+            }
+        }
+    })
 })
 
+//닉네임 중복 체크
+app.post('/nick_check', (req, res) => {
+    let nickname = req.body.nick;
+    pool.query("select * from customer where nickname = ?", nickname, function(err, results) {
+        if(err) {
+            console.log(err);
+            res.send({data: "false"});
+        } else {
+            if(results.length<=0){
+                res.send({data: "true"});
+            }
+            else{
+                res.send({data: "false"});
+            }
+        }
+    })
+})
+
+//6자리 난수 생성기
+function generate(min, max) {
+    let randNum = Math.floor(Math.random() * (max - min + 1)) + min;
+    return randNum;
+}
+
+//이메일 전송
+app.post('/email', (req, res) => {
+    let email = req.body.email;
+    let code = generate(111111,999999);
+    console.log(code);
+    const mailOption = {
+        from: process.env.GOOGLE_MAIL,
+        to: email,
+        subject: "인증 관련 메일 입니다.",
+        html: `<h1> 인증번호를 입력해주세요 \n\n\n\n\n\n</h1> ${code}`
+    }
+
+    smtpTransport.sendMail(mailOption, (err, response) => {
+        if(err){
+            res.send({data: "false"});
+        } else{
+            res.send({data: "true",
+        vnum: code});
+        }
+    })
+
+})
+
+//회원가입
+app.post('/signin', (req, res) => {
+    let ident = req.body.ident;
+    let pwd = crypto(req.body.password);
+    let nickname = req.body.nickname;
+    let email = req.body.email;
+
+    const info = {
+        ident : ident,
+        pwd : pwd,
+        nickname: nickname,
+        email: email
+    }
+    pool.query("insert into customer set ?", info, function(err, results){
+        if(err){
+            console.log(err);
+            res.send({data: "false"});
+        } else {
+            res.send({data: "true"});
+        }
+    })
+})
+
+// 로그인
+app.post("/login", (req, res) => {
+    let ident = req.body.ident;
+    let pwd = crypto(req.body.pwd);
+
+    pool.query("select * from customer where ident = ? and pwd = ?", [ident, pwd], function(err, results){
+        if(err){
+            console.log(err);
+            res.send({data: "err"});
+        } else{
+            if(results.length<=0){
+                res.send({data: "false"});
+            } else{
+                req.session.is_logined = true;
+                req.session.nickname = results[0].nickname;
+                req.session.save(function(){
+                    res.send({
+                        data: "true"
+                    });
+                });
+            }
+        }
+    })
+})
+
+app.post("/test", (req, res) => {
+    let test = req.body.data;
+    res.send({data : crypto(test)});
+})
+
+app.post('/login_process', async function (req, res) {
+    let ident = req.body.ident;
+    let pwd = crypto.createHashPassword(req.body.pwd);
+    if(ident && pwd) {
+        const result = await mysql.query('login', [ident, pwd]);
+        if(results.length > 0 ) {
+            req.session.is_logined = true;
+            req.session.nuckname = result[0].nuckname;
+            req.session.ident = ident;
+            req.session.save(function () {
+                res.redirect('/');
+            });
+        } else {
+            res.send(`<script type="text/javascript">alert("로그인 정보가 일치하지 않습니다."); 
+                document.location.href="/login";</script>`);
+        }
+    } else {
+        res.send(`<script type="text/javascript">alert("아이디와 비밀번호를 입력하세요!"); 
+        document.location.href="/login";</script>`);
+    }
+});
 
 app.get('/login', (req,res)=>{
     res.sendFile(__dirname +'/views/login.html')
@@ -310,45 +470,5 @@ wsServer.on("connection", (socket) => {
     });
 });
 
-const handleListen = () => console.log("Listening on http://localhost:3000");
-httpServer.listen(3000, handleListen);
-
-
-app.post('/login', (req,res)=>{
-    const {userid,userpw} = req.body;
-    connection.query(`SELECT * FROM User WHERE userid="${userid}"`, (error, result) => {
-        if (error) return console.log(error);
-    
-        if (result.length) {
-          console.log(result);
-          if (result[0].userpw === userpw) {
-            console.log('login 성공');
-          } else {
-            console.log('login 실패');
-          }
-          res.redirect('/');
-        } else {
-          console.log('login 실패');
-          res.redirect('/');
-        }
-      });
-    res.sendFile(__dirname +'/views/login.html')
-})
-
-
-
-app.post('/join', (req, res) => {
-    const {name,userid,userpw,useremail,} = req.body;
-    //mysql 삽입;
-    var sql = `INSERT INTO User (userid, userpw, username, useremail) VALUES ('${name}','${userid}','${userpw}','${useremail}')`;
-    connection.query(sql, function (err, result) {
-        if (err) throw err;
-        console.log("1 record inserted");
-        });
-    res.sendFile(__dirname + "/views/login.html")
-})
-// connection.query("select * from User", (error, rows, fields) => {
-//     if (error) throw error;
-//     console.log('User info is:', rows);
-// });
-//connection.end();
+const handleListen = () => console.log("Listening on http://localhost:3001");
+httpServer.listen(3001, handleListen);
