@@ -8,6 +8,22 @@ const cors = require("cors");
 const MemoryStore = require("memorystore")(session);
 const smtpTransport = require("./email/email.js");
 const path = require("path");
+const customer_router = require("./router/customer.js");
+const study_group_router = require("./router/study_group.js");
+const inquire_router = require("./router/inquire.js");
+const post_router = require("./router/post.js");
+const comments_router = require("./router/comments.js");
+const question_list_router = require("./router/question_list.js");
+const evaluation_standard_router = require("./router/evaluation_standard.js");
+const video_router = require("./router/video.js");
+const answer_evaluation_router = require("./router/answer_evaluation.js");
+const face_evaluation_router = require("./router/face_evaluation.js");
+const gaze_evaluation_router = require("./router/gaze_evaluation.js");
+const result_router = require("./router/result.js");
+const multerS3 = require("multer-s3");
+const aws = require("aws-sdk");
+const multer = require("multer");
+
 require("dotenv").config({path : path.join(__dirname, './env/.env')});
 
 const app = express();
@@ -42,12 +58,42 @@ app.use('/models', express.static(__dirname + '/models'));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
+//라우터 등록
+app.use("/customer", customer_router);
+app.use("/study_group", study_group_router);
+app.use("/inquire", inquire_router);
+app.use("/post", post_router);
+app.use("/comments", comments_router);
+app.use("/question_list", question_list_router);
+app.use("/evaluation_standard", evaluation_standard_router);
+app.use("/vedio", video_router);
+app.use("/answer_evaluation", answer_evaluation_router);
+app.use("/face_evaluation", face_evaluation_router);
+app.use("/gaze_evaluation", gaze_evaluation_router);
+app.use("/result", result_router);
 
-app.get("/customers", async (req, res) => {
-    const customers = await mysql.query('customerList');
-    console.log(customers);
-    res.send(customers);
-});
+
+// aws s3 저장소 연결
+aws.config.loadFromPath("s3.json");
+
+const s3 = new aws.S3();
+
+const awsUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: "vi-storage-sanhjak",
+        acl: "public-read",
+        key: function(req, file, cb) {
+            cb(null, Math.floor(Math.random() * 1000).toString() + Date.now() + '.' + file.originalname.split('.').pop());
+        }
+    })
+})
+
+// 파일 첨부
+app.post("/file", awsUpload.single("file"), (req, res) => {
+    console.log(req.file.location);
+    res.send({data: req.file.location});
+})
 
 //질문 제출 시 텍스트파일로 저장
 app.post('/submit', (req,res) => {
@@ -266,6 +312,7 @@ app.post("/login", (req, res) => {
             } else{
                 req.session.is_logined = true;
                 req.session.nickname = results[0].nickname;
+                req.session.id = results[0].id;
                 req.session.save(function(){
                     res.send({
                         data: "true"
@@ -276,10 +323,6 @@ app.post("/login", (req, res) => {
     })
 })
 
-app.post("/test", (req, res) => {
-    let test = req.body.data;
-    res.send({data : crypto(test)});
-})
 
 app.post('/login_process', async function (req, res) {
     let ident = req.body.ident;

@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 /node_modules
 .env
+s3.json
 =======
 # dependencies
 /node_modules

@@ -1,14 +1,4 @@
-const pool = require("../src/mysql/index.js");
+const crypto = require("../src/crypto/crypto.js");
+let result = crypto("123");
 
-
-const data = {
-    ident : "test",
-    pwd : "test",
-    nickname : "test",
-    email : "test"
-}
-
-pool.query("insert into customer set ? ", data, function(err, results) {
-    console.log(err);
-    console.log(results);
-})
+console.log(result);

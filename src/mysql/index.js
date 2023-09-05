@@ -10,7 +10,7 @@ const pool = mysql.createPool({
     user : process.env.MYSQL_USERNAME,
     password : process.env.MYSQL_PASSWORD,
     database : process.env.MYSQL_DB,
+    dateStrings: "date",
 });
-
 
 module.exports = pool;
