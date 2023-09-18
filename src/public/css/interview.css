@@ -79,22 +79,13 @@ canvas{
     line-height:40px; 
     border:1px #3399dd solid;;
     position: absolute;
-    top: 78vh;
+    top: 88vh;
     left: 50% - 40px;
     background-color:#66aaff;  
     text-align:center; 
     cursor: pointer;  
     color:#333; 
     transition:all 0.9s, color 0.3;  
-
-    /* 
-    position: absolute;
-    top: 78vh;
-    left: 50% - 40px;
-    width : 50px;
-    height : 50px;
-    background-image: url("/images/playbtn.png");
-    background-size: cover;*/
 }
 
 .btn hover4:hover{color:#fff;}
@@ -113,23 +104,12 @@ canvas{
     height:40px; 
     line-height:40px; 
     border:1px #3399dd solid;;
-    position: absolute;
-    top: 78vh;
-    left: 50% - 40px;
+    margin-top: 30px; 
     background-color:#66aaff;  
     text-align:center; 
     cursor: pointer;  
     color:#333; 
-    transition:all 0.9s, color 0.3;  
-
-    /* 
-    position: absolute;
-    top: 78vh;
-    left: 50% - 40px;
-    width : 50px;
-    height : 50px;
-    background-image: url("/images/playbtn.png");
-    background-size: cover;*/
+    transition:all 0.9s, color 0.3; 
 }
 
 #stopBtn:hover{

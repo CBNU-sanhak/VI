@@ -1,15 +1,6 @@
-
 const playBtn = document.getElementById('playBtn');
 const stopBtn = document.getElementById("stopBtn");
-const sentence = document.getElementById("sentence");
-
-(() => { 
-    //const playBtn = document.getElementById("playBtn");
-    //const stopBtn = document.getElementById("stopBtn");
-    //recBtn.addEventListener("click", recBtnHandler)
-    //stopBtn.addEventListener("click", stopBtnHandler);
-  })();
-  
+const sentence = document.getElementById("sentence");  
 
 let speech_sentence = "";
 
@@ -37,38 +28,21 @@ function recBtnHandler() {
       }
     }
   };
-
-  
-
 }
 
-/* function stopBtnHandler() {
-  annyang.abort();
-} */
-recBtnHandler();
 playBtn.addEventListener('click', async () => {      //버튼 눌리면 이벤트리스너 실행
-  recBtnHandler();
-  
   playBtn.style.display = "none";
   stopBtn.style.display = "block";
+  
+  setTimeout(() => {
+    recBtnHandler();
+  }, 2000); // 2000ms = 2초
 });
 
 stopBtn.addEventListener('click', async () => {      //버튼 눌리면 이벤트리스너 실행
-  //console.log(speech_sentence);
 
   playBtn.style.display = "block";
   stopBtn.style.display = "none";
 
   speech_sentence = "";
 });
-
-/* function saveAsFile(str, filename) {
-  var hiddenElement = document.createElement('a');
-  hiddenElement.href = 'data:attachment/text,' + encodeURI(str);
-  hiddenElement.target = '_blank';
-  hiddenElement.download = filename;
-  hiddenElement.click();
-}
-
-var strdata = "Hello, world!";
-saveAsFile(strdata, "output.txt"); */

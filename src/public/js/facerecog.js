@@ -1,4 +1,4 @@
-
+const form = document.getElementById('myform');
 const video = document.getElementById('video');
 const ai = document.getElementById('ai');
 const playBtn = document.getElementById('playBtn');
@@ -41,6 +41,8 @@ let opacity = 0.1;
 let same_expression_count = 0;      //이거로 통과 실패 가리면 될듯
 let before_expression = "neutral";
 
+let score = 100;
+
 var time = 60;
 
 //모델 로드
@@ -51,15 +53,47 @@ Promise.all([
     faceapi.nets.faceExpressionNet.loadFromUri('/models')
 ]).then(startVideo);
 
+let recordedChunks = [];
+let mediaRecorder; 
+
+function startVideo() {
+    navigator.getUserMedia(
+        { video: true, audio: true },
+        stream => {
+            video.srcObject = stream;
+
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+    
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'interview_video.mp4';  
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            };
+        },
+        err => console.error(err)
+    );
+}
 
 //비디오 시작함수
+/*
 function startVideo() {
     navigator.getUserMedia(
         { video: {} },
         stream => video.srcObject = stream,
         err => console.error(err)
     )
-}
+}*/
 
 //현재 최고 수치 감정 가져오기
 function get_top_expression(obj){  
@@ -76,41 +110,53 @@ function get_top_expression(obj){
     return ret_obj;
 }
 
-//대화상자 출력함수
+const emotionCounts = {
+    happy: 0,
+    sad: 0,
+    neutral: 0,
+    surprised: 0,
+    angry: 0
+};
+let feedback;
+
 function ai_talk(obj){
     let value = obj["default_value"];
     let expression = obj["final_expression"];
         
     if(expression == 'happy'){
-        if(value > 0.6){
-            ai.innerHTML = ai_feedback_expression['happy']['0']; ; 
-        }
-        else if(value <= 0.6 && value > 0.3){
-            ai.innerHTML = ai_feedback_expression['happy']['1']; 
+        if(value <= 0.6 && value > 0.3){
+            feedback = 'happy';
         }
     }
     else if(expression == 'neutral'){
         if(value > 0.6){
-            ai.innerHTML = ai_feedback_expression['neutral']['0']; 
+            prev_face = 'neutral';
         }
         else if(value <= 0.6 && value > 0.3){
-            ai.innerHTML = ai_feedback_expression['neutral']['1']; 
+            prev_face = 'neutral';
+            if(prev_face !== 'neutral')
+                score -= 4;
         }
     }
     else if(expression == 'sad'){
+        prev_face = 'sad';
         if(value > 0.6){
-            ai.innerHTML = ai_feedback_expression['sad']['0']; 
+            score -= 8;
         }
     }
     else if(expression == 'surprised'){
-        ai.innerHTML = ai_feedback_expression['happy']['1']; 
+        //ai.innerHTML = ai_feedback_expression['happy']['1']; 
     }
     else if(expression == 'angry'){
-        ai.innerHTML = ai_feedback_expression['happy']['1']; 
+        score -= 5;
+        //ai.innerHTML = ai_feedback_expression['happy']['1']; 
     }
     else{
         //ai.innerHTML = "화면 안으로 들어와주세요"; 
     }
+    emotionCounts[expression]++;
+    console.log(emotionCounts);
+    console.log(score);
 }
  
 //faceapi 타이니디텍터 옵션 가져오기
@@ -151,8 +197,8 @@ async function onPlay(){
          const right_coordinate  = { x:Math.round(right_sumX/6), y:Math.round(right_sumY/6)};
          left_eye_list.push(left_coordinate);
          right_eye_list.push(right_coordinate);
-         console.log(left_eye_list);
-         console.log(right_eye_list);
+         //console.log(left_eye_list);
+         //console.log(right_eye_list);
 
         const dims = faceapi.matchDimensions(canvas, videoEl, true);
         const resizedResult = faceapi.resizeResults(detections, dims);
@@ -167,13 +213,13 @@ async function onPlay(){
             else if(state == 2){
                 message.innerHTML = "면접 질문 중";
                 message2.innerHTML = "";
-                ai.innerHTML = "";
+                //ai.innerHTML = "";
                 
             }
             else{
                 message.innerHTML = setting_feedback['setting']['0'];
                 message2.innerHTML = "인식 성공";
-                ai.innerHTML = "";
+                //ai.innerHTML = "";
                 faceapi.draw.drawDetections(canvas, resizedResult);
                 faceapi.draw.drawFaceLandmarks(canvas, resizedResult);
                 faceapi.draw.drawFaceExpressions(canvas, resizedResult, minConfidence);
@@ -185,7 +231,7 @@ async function onPlay(){
     }else{
         if(state == 0)message2.innerHTML = "화면 안으로 들어와주세요";
         //else 
-        else if(state == 1) ai.innerHTML = "화면 안으로 들어와주세요"; 
+        //else if(state == 1) ai.innerHTML = "화면 안으로 들어와주세요"; 
     }
 }
 
@@ -218,10 +264,9 @@ function speak(text, opt_prop) {
     // SpeechSynthesisUtterance에 저장된 내용을 바탕으로 음성합성 실행
     window.speechSynthesis.speak(speechMsg)
 
-    state = 1;  //진행상황 시작
+    //state = 1;  //진행상황 시작
     message2.innerHTML = "";
 }
-
 
 playBtn.addEventListener('click', () => {      //버튼 눌리면 이벤트리스너 실행
     state = 2;      //질문 출력
@@ -230,51 +275,62 @@ playBtn.addEventListener('click', () => {      //버튼 눌리면 이벤트리�
         rate: 0.62,
         pitch: 0.8,
         lang: selectLang
-    })
+    });
 
-    //var audio = new Audio('/speech/test.mp3');
-     //audio.play();
-     
-    
-    /* speak.addEventListener("ended", function(){ 
-        state = 1;  //진행상황 시작
-        message2.innerHTML = "";
-    });  */  
+    // 음성 출력 종료 후 상태 변경
+    setTimeout(() => {
+        state = 1;
+    }, 2000); // 1000ms = 1초
+
+    mediaRecorder.start();
 });
 
-
-/*
-stopBtn.addEventListener('click', async () => {      //버튼 눌리면 이벤트리스너 실행
-    //console.log(speech_sentence);
-    console.log(JSON.stringify(left_eye_list));
-    console.log(JSON.stringify(right_eye_list));
+stopBtn.addEventListener('click', async () => {
+    if (mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+    }
     
-  });
-  */
+    const emotionCountsJSON = JSON.stringify(emotionCounts);
+
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'emotionCounts';
+    hiddenInput.value = emotionCountsJSON;
+
+    // 폼에 추가된 필드를 폼에 삽입합니다.
+    form.appendChild(hiddenInput);
+    
+    if (recordedChunks.length !== null) {
+        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+
+        // FormData 생성 및 데이터 추가
+        const formData = new FormData();
+        formData.append('videoBlob', blob);
+
+        // 서버로 데이터 전송
+        try {
+            const response = await fetch('/submit', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                console.log('성공');
+            } else {
+                console.error('실패');
+            }
+        } catch (error) {
+            console.error('에러:', error);
+        }
+    } else {
+        console.log('에러.');
+    }
+});
+
 
 $('#myform').on('submit', function() {
-
-    // ...
     $('input[name=left_eyes]').attr('value',JSON.stringify(left_eye_list));
     $('input[name=right_eyes]').attr('value',JSON.stringify(right_eye_list));
+    $('input[name=score]').attr('value',JSON.stringify(score));
     return true;
 });
-
-
-/*
-var gtts = require('node-gtts')('en');
-var path = require('path');
-var filepath = path.join(__dirname, 'i-love-you.wav');
- 
-gtts.save(filepath, 'I love you', function() {
-  console.log('save done');
-})*/
-
-/*
-let gtts = require('node-gtts')('en')     //이게 문젠데 왜 안되는지 모르겟음 경로문제같은데
-var path = require('path')
-var filePath = path.join(__dirnamem, 'test.mp3');
-
-gtts.save(filePath, "Hello World My name is joonhee", function(){
-    console.log("savedone")
-})*/

@@ -74,7 +74,7 @@ app.use("/result", result_router);
 
 
 // aws s3 저장소 연결
-aws.config.loadFromPath("s3.json");
+aws.config.loadFromPath(path.join(__dirname, 's3.json'));
 
 const s3 = new aws.S3();
 
@@ -97,15 +97,21 @@ app.post("/file", awsUpload.single("file"), (req, res) => {
 
 //질문 제출 시 텍스트파일로 저장
 app.post('/submit', (req,res) => {
-    //var sentence = req.query.sentence;
+    const blobData = req.body.videoBlob;
+    if (blobData === null) {
+        console.log("이상");
+    }
     var sentence1 = req.body.sentence;
     var left_eyes = (req.body.left_eyes);
     var right_eyes = (req.body.right_eyes);
     const obj ={sentence : sentence1};
     var sentence = JSON.stringify(obj);
     console.log(sentence);
+    console.log(req.body.score);
+    console.log(req.body.emotionCounts);
 
-    const fs = require('fs');
+    const fs = require('fs');    
+    //fs.writeFileSync('video.mp4', blobData);
     fs.writeFileSync("test.txt", sentence);
     fs.writeFileSync("left_eyes.txt", left_eyes);
     fs.writeFileSync("right_eyes.txt", right_eyes);

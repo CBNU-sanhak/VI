@@ -34,10 +34,10 @@
     <video id="video" autoplay muted></video>
     <canvas id="overlayCanvas"></canvas>
     <!--<div id="nav_btn"><button id="playBtn" type="button"></button></div>-->
-    <button class="btn hover4" id="playBtn">Start</button>
+    <button class="btn hover4" id="playBtn">면접시작</button>
     <form id="myform" method="post" action="submit">
       <button class="btn hover4" id="stopBtn" style="display: none">
-        Stop
+        면접제출
       </button>
       <input
         style="display: none"
@@ -47,10 +47,10 @@
         style="display: block"
         value="대답 문장"
       />
+      <input type="file" name="videoBlob" style="display: none">
       <input type="hidden" name="left_eyes" value="value" />
       <input type="hidden" name="right_eyes" value="value" />
+      <input type="hidden" name="score" value="value" />
     </form>
-
-    <div id="ai"></div>
   </body>
 </html>
