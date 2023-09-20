@@ -1,7 +1,3 @@
-
-
-
-
 const DrawEyeResult = (left, right) => {
     const left_eye_list = left;
     const right_eye_list = right;
@@ -76,7 +72,7 @@ const DrawEyeResult = (left, right) => {
     }
   };
 
-  fetch("http://localhost:3000/getEyearray")
+  fetch("http://localhost:3001/getEyearray")
   .then((response) => response.json())
   .then((data) => {
         console.log(data);

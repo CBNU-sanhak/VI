@@ -24,6 +24,10 @@ const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
 const multer = require("multer");
 
+//라우터 시험
+const interviewRoutes = require('./router/interview');  //면접페이지 라우터 추가
+const errorController = require('./controllers/error'); //라우팅 에러 페이지
+
 require("dotenv").config({path : path.join(__dirname, './env/.env')});
 
 const app = express();
@@ -49,7 +53,6 @@ app.use(session({
     cookie: { maxAge: 86400000 },
 }));
 
-
 app.use("/public", express.static(__dirname + "/public"));
 app.use("/speech", express.static(__dirname + "/speech"));
 app.use('/images', express.static(__dirname + '/images'));
@@ -71,7 +74,8 @@ app.use("/answer_evaluation", answer_evaluation_router);
 app.use("/face_evaluation", face_evaluation_router);
 app.use("/gaze_evaluation", gaze_evaluation_router);
 app.use("/result", result_router);
-
+//준희추가
+app.use(interviewRoutes);
 
 // aws s3 저장소 연결
 aws.config.loadFromPath(path.join(__dirname, 's3.json'));
@@ -95,125 +99,118 @@ app.post("/file", awsUpload.single("file"), (req, res) => {
     res.send({data: req.file.location});
 })
 
-//질문 제출 시 텍스트파일로 저장
-app.post('/submit', (req,res) => {
-    const blobData = req.body.videoBlob;
-    if (blobData === null) {
-        console.log("이상");
-    }
-    var sentence1 = req.body.sentence;
-    var left_eyes = (req.body.left_eyes);
-    var right_eyes = (req.body.right_eyes);
-    const obj ={sentence : sentence1};
-    var sentence = JSON.stringify(obj);
-    console.log(sentence);
-    console.log(req.body.score);
-    console.log(req.body.emotionCounts);
+// //질문 제출 시 텍스트파일로 저장
+// app.post('/submit', (req,res) => {
+//     const blobData = req.body.videoBlob;
+//     if (blobData === null) {
+//         console.log("이상");
+//     }
+//     var sentence1 = req.body.sentence;
+//     var left_eyes = (req.body.left_eyes);
+//     var right_eyes = (req.body.right_eyes);
+//     const obj ={sentence : sentence1};
+//     var sentence = JSON.stringify(obj);
+//     console.log(sentence);
+//     console.log(req.body.score);
+//     console.log(req.body.emotionCounts);
 
-    const fs = require('fs');    
-    //fs.writeFileSync('video.mp4', blobData);
-    fs.writeFileSync("test.txt", sentence);
-    fs.writeFileSync("left_eyes.txt", left_eyes);
-    fs.writeFileSync("right_eyes.txt", right_eyes);
+//     const fs = require('fs');    
+//     //fs.writeFileSync('video.mp4', blobData);
+//     fs.writeFileSync("test.txt", sentence);
+//     fs.writeFileSync("left_eyes.txt", left_eyes);
+//     fs.writeFileSync("right_eyes.txt", right_eyes);
 
-    res.sendFile(__dirname +'/views/test2.html')
-})
-
-
-//질문 제출 시 텍스트파일로 저장
-app.get('/submit2', (req,res) => {
-    var sentence = req.query.sentence;
-    //var sentence = JSON.stringify(req.body);
-    console.log(sentence);
-
-    const fs = require('fs');
-    fs.writeFileSync("test.txt", sentence);
-
-    res.sendFile(__dirname +'/views/test.html')
-})
+//     res.sendFile(__dirname +'/views/test2.html')
+// })
 
 
+// //질문 제출 시 텍스트파일로 저장
+// app.get('/submit2', (req,res) => {
+//     var sentence = req.query.sentence;
+//     //var sentence = JSON.stringify(req.body);
+//     console.log(sentence);
 
-app.get('/getEyearray',(req,res)=>{
-    const fs = require('fs');
-    var data1 = fs.readFileSync('right_eyes.txt', (err,data) => {});
-    var data2 = fs.readFileSync('left_eyes.txt', (err,data) => {});
-    //console(data);
+//     const fs = require('fs');
+//     fs.writeFileSync("test.txt", sentence);
+
+//     res.sendFile(__dirname +'/views/index.html')
+// })
+
+
+
+// app.get('/getEyearray',(req,res)=>{
+//     const fs = require('fs');
+//     var data1 = fs.readFileSync('right_eyes.txt', (err,data) => {});
+//     var data2 = fs.readFileSync('left_eyes.txt', (err,data) => {});
+//     //console(data);
    
-    var data = { right: JSON.parse(data1), left: JSON.parse(data2)};
-    //console.log(data);
-    res.send(data);
-})
+//     var data = { right: JSON.parse(data1), left: JSON.parse(data2)};
+//     //console.log(data);
+//     res.send(data);
+// })
 
-app.get('/eyesresult', (req,res)=>{
-    res.render("eyeresult");
-})
+// app.get('/eyesresult', (req,res)=>{
+//     res.render("eyeresult");
+// })
 
 
 
 //api통신
-app.post('/convert', (req,res)=>{
-    const fs = require('fs');
-    var data = fs.readFileSync('test.txt', (err,data) => {});
-    //console(data);
-    var dataParsed = JSON.parse(data);
-    //var dataParsed = data;
-    //console.log(data)
+// app.post('/convert', (req,res)=>{
+//     const fs = require('fs');
+//     var data = fs.readFileSync('test.txt', (err,data) => {});
+//     //console(data);
+//     var dataParsed = JSON.parse(data);
+//     //var dataParsed = data;
+//     //console.log(data)
     
-    //res.sendFile(__dirname +'/views/test2.html')
-    res.writeHead(200, {'Content-Type': 'text/html;charset=UTF-8'});
-    var openApiURL = "http://aiopen.etri.re.kr:8000/WiseNLU_spoken";
+//     //res.sendFile(__dirname +'/views/test2.html')
+//     res.writeHead(200, {'Content-Type': 'text/html;charset=UTF-8'});
+//     var openApiURL = "http://aiopen.etri.re.kr:8000/WiseNLU_spoken";
  
-    var access_key = '725aebde-323a-4964-a231-ccde25bae07e';
-    var analysisCode = 'ner';
-    var text = '';
+//     var access_key = '725aebde-323a-4964-a231-ccde25bae07e';
+//     var analysisCode = 'ner';
+//     var text = '';
     
-    // 언어 분석 기술(문어)
-    text += dataParsed.sentence;
-    //text += "학교 가기 싫다.";
+//     // 언어 분석 기술(문어)
+//     text += dataParsed.sentence;
+//     //text += "학교 가기 싫다.";
     
-    var requestJson = {  
-        'argument': {
-            'text': text,
-            'analysis_code': analysisCode
-        }
-    };
+//     var requestJson = {  
+//         'argument': {
+//             'text': text,
+//             'analysis_code': analysisCode
+//         }
+//     };
 
-    var request = require('request');
-    var options = {
-        url: openApiURL,
-        body: JSON.stringify(requestJson),
-        headers: {'Content-Type':'application/json','Authorization':access_key}
-    };
+//     var request = require('request');
+//     var options = {
+//         url: openApiURL,
+//         body: JSON.stringify(requestJson),
+//         headers: {'Content-Type':'application/json','Authorization':access_key}
+//     };
 
-    request.post(options, function (error, response, body) {
-        res.write(body);
-        /* const searchData = body.filter(object => {
-            if (object.NAME.indexOf('NNG') > -1) {
-              return object;
-            }
-            return null;
-          });
+//     request.post(options, function (error, response, body) {
+//         res.write(body);
+//         /* const searchData = body.filter(object => {
+//             if (object.NAME.indexOf('NNG') > -1) {
+//               return object;
+//             }
+//             return null;
+//           });
       
-        res.write(searchData); */
-    });    
-})
+//         res.write(searchData); */
+//     });    
+// })
 
-//12.7 추가 테스트용
+//12.7 추가 테스트용(api 통신 홈페이지 로드)
 app.get("/test2", (req, res) => res.sendFile(__dirname +'/views/test2.html'));
 
 
-
-//app.get("/", (req, res) => res.sendFile(__dirname +'/views/index.html'));
-app.get("/", (req, res) => res.sendFile(__dirname +'/views/test.html'));
-//app.get("/*", (req, res) => res.redirect("/"));   11.06 통합과정 주석처리
-
+app.get("/", (req, res) => res.sendFile(__dirname +'/views/index.html'));
 //추가
 app.get('/home', (req,res)=>{
     res.render('home')
-})
-app.get('/interview', (req,res)=>{
-    res.sendFile(__dirname +'/views/interview.html')
 })
 
 //아이디 중복 확인
@@ -355,14 +352,6 @@ app.post('/login_process', async function (req, res) {
 app.get('/login', (req,res)=>{
     res.sendFile(__dirname +'/views/login.html')
 })
-app.get('/interview2', (req,res)=>{
-    res.sendFile(__dirname +'/views/interview2.html')
-})
-app.get('/annyang', (req,res)=>{
-    res.sendFile(__dirname +'/views/annyang.html')
-})
-
-
 
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
@@ -518,6 +507,9 @@ wsServer.on("connection", (socket) => {
     }
     });
 });
+
+//404에러 페이지
+app.use(errorController.get404);
 
 const handleListen = () => console.log("Listening on http://localhost:3001");
 httpServer.listen(3001, handleListen);

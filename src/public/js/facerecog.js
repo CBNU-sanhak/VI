@@ -5,17 +5,7 @@ const playBtn = document.getElementById('playBtn');
 const stopBtn = document.getElementById("stopBtn");
 const message = document.getElementById('message');
 const message2 = document.getElementById('message2');
-/*
-const $body = $('body');
-const $message = $('message');
-const $sentiment = $('sentiment');
-const $ai_talk = $('ai_talk');      //어케할까
-const $neutral = $('neutral');
-const $happy = $('happy');
-const $sad = $('sad');
-const $surprised = $('surprised');
-const $ai = $('ai');
-*/
+const sentence = document.getElementById("sentence");  
 
 const fadeout_duration = 300;
 const opacity_init = 0.1;
@@ -42,8 +32,10 @@ let same_expression_count = 0;      //이거로 통과 실패 가리면 될듯
 let before_expression = "neutral";
 
 let score = 100;
-
 var time = 60;
+
+//답변 문장 체크
+let speech_sentence = "";
 
 //모델 로드
 Promise.all([
@@ -56,6 +48,41 @@ Promise.all([
 let recordedChunks = [];
 let mediaRecorder; 
 
+let testValue;
+
+//비디오 버그 수정용
+const sendAvi = blob => {
+    if (blob == null) return;
+    
+    let filename = new Date().toString() + ".avi";
+    const file = new File([blob], filename);
+   
+    let fd = new FormData();
+    fd.append("fname", filename);
+    fd.append("file", file);
+   
+    $.ajax({
+      url: "~~~url~~~",
+      type: "POST",
+      contentType: false,
+      processData: false,
+      data: fd,
+      success: function (data, textStatus) {
+        if (data != null) {
+          setUserResponse(data);
+          send(data);
+        }
+      },
+      error: function (errorMessage) {
+        setUserResponse("");
+        console.log("Error" + errorMessage);
+      },
+    }).done(function (data) {
+      console.log(data);
+    });
+}
+
+//비디오 시작함수
 function startVideo() {
     navigator.getUserMedia(
         { video: true, audio: true },
@@ -73,6 +100,7 @@ function startVideo() {
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunks, { type: 'video/mp4' });
                 const url = URL.createObjectURL(blob);
+                //sendAvi(videoBlob);                         //비디오 버그 수정용 코드 추가
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = 'interview_video.mp4';  
@@ -84,16 +112,6 @@ function startVideo() {
         err => console.error(err)
     );
 }
-
-//비디오 시작함수
-/*
-function startVideo() {
-    navigator.getUserMedia(
-        { video: {} },
-        stream => video.srcObject = stream,
-        err => console.error(err)
-    )
-}*/
 
 //현재 최고 수치 감정 가져오기
 function get_top_expression(obj){  
@@ -109,6 +127,35 @@ function get_top_expression(obj){
     });
     return ret_obj;
 }
+
+//stt함수
+function recBtnHandler() {
+    annyang.start({ autoRestart: true, continuous: false });
+    const recognition = annyang.getSpeechRecognizer();
+    let final_transcript = "";
+    recognition.interimResults = true;
+    recognition.onresult = function (event) {
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          speech_sentence += event.results[i][0].transcript;
+          speech_sentence += " ";
+          final_transcript += event.results[i][0].transcript;
+          console.log("님이 말하는 문장 : " + final_transcript);
+          $('input[name=sentence]').attr('value',speech_sentence);
+          final_transcript="";
+        } else {
+  
+        }
+      }
+    };
+  }
+  
+  $('#myform').on('submit', function() {
+      $('input[name=left_eyes]').attr('value',JSON.stringify(left_eye_list));
+      $('input[name=right_eyes]').attr('value',JSON.stringify(right_eye_list));
+      $('input[name=score]').attr('value',JSON.stringify(score));
+      return true;
+  });
 
 const emotionCounts = {
     happy: 0,
@@ -243,46 +290,68 @@ video.addEventListener('play', async () => {      //비디오 켜지면 이벤�
 
 // 이벤트 영역
 const selectLang = "ko-KR"
-const text = "이 기업에 왜 지원했나요?"
 
 function speak(text, opt_prop) {
-    if (typeof SpeechSynthesisUtterance === "undefined" || typeof window.speechSynthesis === "undefined") {
-        alert("이 브라우저는 음성 합성을 지원하지 않습니다.")
-        return
-    }
-    
-    window.speechSynthesis.cancel() // 현재 읽고있다면 초기화
+    return new Promise((resolve, reject) => {
+        if (typeof SpeechSynthesisUtterance === "undefined" || typeof window.speechSynthesis === "undefined") {
+            alert("이 브라우저는 음성 합성을 지원하지 않습니다.");
+            reject("음성 합성 지원하지 않음");
+            return;
+        }
 
-    const prop = opt_prop || {}
+        window.speechSynthesis.cancel(); //현재 읽고있다면 초기화
 
-    const speechMsg = new SpeechSynthesisUtterance()
-    speechMsg.rate = prop.rate || 10 // 속도: 0.1 ~ 10      
-    speechMsg.pitch = prop.pitch || 1 // 음높이: 0 ~ 2
-    speechMsg.lang = prop.lang || "ko-KR"
-    speechMsg.text = text
-    
-    // SpeechSynthesisUtterance에 저장된 내용을 바탕으로 음성합성 실행
-    window.speechSynthesis.speak(speechMsg)
+        const prop = opt_prop || {};
 
-    //state = 1;  //진행상황 시작
-    message2.innerHTML = "";
+        const speechMsg = new SpeechSynthesisUtterance();
+        speechMsg.rate = prop.rate || 10; // 속도: 0.1 ~ 10      
+        speechMsg.pitch = prop.pitch || 1; // 음높이: 0 ~ 2
+        speechMsg.lang = prop.lang || "ko-KR";
+        speechMsg.text = text;
+
+        speechMsg.onend = () => {
+            resolve(); //음성 합성이 완료되면 resolve 호출
+        };
+
+        window.speechSynthesis.speak(speechMsg);
+
+        //state = 1;  //진행상황 시작
+        message2.innerHTML = "";
+    });
 }
 
-playBtn.addEventListener('click', () => {      //버튼 눌리면 이벤트리스너 실행
-    state = 2;      //질문 출력
-    
+//페이지 로드되면 실행
+document.addEventListener("DOMContentLoaded", function() {
+    const testElement = document.querySelector('h1');   //서버에서 동적으로 보낸 h1값 가져옴
+
+    if (testElement) {
+        testValue = testElement.textContent; 
+        //console.log(testValue); 
+    } else {
+        console.log('h1어딨누');
+    }
+});
+
+playBtn.addEventListener('click', () => {
+    playBtn.style.display = "none";
+    stopBtn.style.display = "block";
+
+    state = 2; //질문 출력
+    let text = testValue;
+
     speak(text, {
         rate: 0.62,
         pitch: 0.8,
         lang: selectLang
-    });
-
-    // 음성 출력 종료 후 상태 변경
-    setTimeout(() => {
+    }).then(() => {
+        //음성 출력 종료 후 상태 변경
         state = 1;
-    }, 2000); // 1000ms = 1초
 
-    mediaRecorder.start();
+        recBtnHandler();
+        mediaRecorder.start();
+    }).catch((error) => {
+        console.error("음성 합성 오류: ", error);
+    });
 });
 
 stopBtn.addEventListener('click', async () => {
@@ -297,40 +366,8 @@ stopBtn.addEventListener('click', async () => {
     hiddenInput.name = 'emotionCounts';
     hiddenInput.value = emotionCountsJSON;
 
-    // 폼에 추가된 필드를 폼에 삽입합니다.
+    //폼에 추가된 필드를 폼에 삽입
     form.appendChild(hiddenInput);
-    
-    if (recordedChunks.length !== null) {
-        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
 
-        // FormData 생성 및 데이터 추가
-        const formData = new FormData();
-        formData.append('videoBlob', blob);
-
-        // 서버로 데이터 전송
-        try {
-            const response = await fetch('/submit', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                console.log('성공');
-            } else {
-                console.error('실패');
-            }
-        } catch (error) {
-            console.error('에러:', error);
-        }
-    } else {
-        console.log('에러.');
-    }
-});
-
-
-$('#myform').on('submit', function() {
-    $('input[name=left_eyes]').attr('value',JSON.stringify(left_eye_list));
-    $('input[name=right_eyes]').attr('value',JSON.stringify(right_eye_list));
-    $('input[name=score]').attr('value',JSON.stringify(score));
-    return true;
+    speech_sentence = "";
 });
