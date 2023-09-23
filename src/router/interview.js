@@ -6,7 +6,7 @@ const interviewController = require('../controllers/interview');     //컨트롤
 
 const router = express.Router();
 
-router.get('/interview', interviewController.getIndex);
+router.get('/interview', interviewController.startInterview);
 
 router.post('/submit', interviewController.submitInterview);
 

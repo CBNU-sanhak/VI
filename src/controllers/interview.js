@@ -1,20 +1,21 @@
 const QuestionList = require('../model/question_list');     //통상적으로 클래스는 대문자로 설정
+const FaceEvaluation = require('../model/faceEvaluation'); 
+
 const express = require("express");
 
 const fs = require('fs');
 const path = require('path');
 
-//됐다 ㅅㅂ
+// //됐다 ㅅㅂ
+// exports.startInterview = (req, res, next) => {
+//     //res.sendFile(path.join(__dirname, '../views/interview2.html'));
+//     res.render('interview', {
+//         test: '안녕하세요 반가워요',
+//         pageTitle: 'Start Interview',
+//         path: '/interview'
+//     }); // 변수를 템플릿에 전달
+// };
 exports.startInterview = (req, res, next) => {
-    //res.sendFile(path.join(__dirname, '../views/interview2.html'));
-    res.render('interview', {
-        test: '안녕하세요 반가워요',
-        pageTitle: 'Start Interview',
-        path: '/interview'
-    }); // 변수를 템플릿에 전달
-};
-
-exports.getIndex = (req, res, next) => {
     QuestionList.randomExtract()
     .then(([rows]) => {    //여기서 인자의 rows는 가져온 중첩 배열(메타데이터)에서 첫 번째 요소가 될 것이고, fieldData는 두 번쨰 요소
         console.log(rows);
@@ -31,19 +32,25 @@ exports.getIndex = (req, res, next) => {
 
 //면접 제출 함수
 exports.submitInterview = (req, res, next) => {
-    const blobData = req.body.videoBlob;
-    if (blobData === null) {
-        console.log("이상");
-    }
-    var sentence1 = req.body.sentence;
-    var left_eyes = (req.body.left_eyes);
-    var right_eyes = (req.body.right_eyes);
+    let sentence1 = req.body.sentence;
+    let left_eyes = (req.body.left_eyes);
+    let right_eyes = (req.body.right_eyes);
     const obj ={sentence : sentence1};
-    var sentence = JSON.stringify(obj);
-    console.log(sentence);
-    console.log(req.body.score);
-    console.log(req.body.emotionCounts);
+    let sentence = JSON.stringify(obj);
+    //console.log(sentence);
+    //console.log(req.body.score);
+    //console.log(req.body.emotionCounts);
  
+    // //표정평가 디비에 삽입부분
+    // const url = 'not updated yet';
+    // const c_no = 5;
+    // const score = parseFloat(req.body.score);
+    // const faceevaluation = new FaceEvaluation(null, c_no, url, score);
+    // faceevaluation.save().then(() => {
+    //     console.log('save complete');
+    // }).catch(err => console.log(err));
+
+    //파일에 저장
     fs.writeFileSync("test.txt", sentence);
     fs.writeFileSync("left_eyes.txt", left_eyes);
     fs.writeFileSync("right_eyes.txt", right_eyes);
@@ -113,4 +120,14 @@ exports.convert = (req, res, next) => {
       
         res.write(searchData); */
     });    
+};
+
+exports.test = (req, res, next) => {
+    const url = 'test';
+    const c_no = 5;
+    const score = 90;
+    const faceevaluation = new FaceEvaluation(null, c_no, url, score);
+    faceevaluation.save().then(() => {
+        res.redirect('/test2');
+    }).catch(err => console.log(err));
 };

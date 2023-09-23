@@ -6,6 +6,7 @@ const stopBtn = document.getElementById("stopBtn");
 const message = document.getElementById('message');
 const message2 = document.getElementById('message2');
 const sentence = document.getElementById("sentence");  
+const videoBlob = document.getElementById("videoBlob");  
 
 const fadeout_duration = 300;
 const opacity_init = 0.1;
@@ -51,36 +52,47 @@ let mediaRecorder;
 let testValue;
 
 //비디오 버그 수정용
-const sendAvi = blob => {
+const sendmp4 = async (blob) => {
     if (blob == null) return;
-    
-    let filename = new Date().toString() + ".avi";
+  
+    const filename = new Date().toString() + ".mp4";
     const file = new File([blob], filename);
-   
-    let fd = new FormData();
+  
+    const fd = new FormData();
     fd.append("fname", filename);
     fd.append("file", file);
-   
-    $.ajax({
-      url: "~~~url~~~",
-      type: "POST",
-      contentType: false,
-      processData: false,
-      data: fd,
-      success: function (data, textStatus) {
-        if (data != null) {
-          setUserResponse(data);
-          send(data);
+    fd.append("score", score);
+    fd.append("left_eyes", JSON.stringify(left_eye_list));
+    fd.append("right_eyes", JSON.stringify(right_eye_list));
+    fd.append("sentence", speech_sentence);
+  
+    try {
+        const response = await fetch("http://localhost:3001/file", {
+            method: "POST",
+            body: fd,
+        });
+  
+        if (response.ok) {
+            const data = await response.text();
+            console.log(data);
+        } else {
+            console.error("HTTP Error:", response.status, response.statusText);
         }
-      },
-      error: function (errorMessage) {
-        setUserResponse("");
-        console.log("Error" + errorMessage);
-      },
-    }).done(function (data) {
-      console.log(data);
-    });
-}
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }
+};
+
+
+// const sendAvi = async (blob) => {
+//     if (blob == null) return;
+  
+//     const filename = new Date().toString() + ".avi";
+//     const file = new File([blob], filename);
+
+//     videoBlob.files = new FileList([file]);
+// };
+
 
 //비디오 시작함수
 function startVideo() {
@@ -99,14 +111,14 @@ function startVideo() {
     
             mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-                const url = URL.createObjectURL(blob);
-                //sendAvi(videoBlob);                         //비디오 버그 수정용 코드 추가
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'interview_video.mp4';  
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
+                sendmp4(blob);                         //비디오 버그 수정용 코드 추가
+                // const url = URL.createObjectURL(blob);
+                // const a = document.createElement('a');
+                // a.href = url;
+                // a.download = 'interview_video.mp4';  
+                // document.body.appendChild(a);
+                // a.click();
+                // window.URL.revokeObjectURL(url);
             };
         },
         err => console.error(err)
@@ -369,5 +381,5 @@ stopBtn.addEventListener('click', async () => {
     //폼에 추가된 필드를 폼에 삽입
     form.appendChild(hiddenInput);
 
-    speech_sentence = "";
+    //speech_sentence = "";
 });
