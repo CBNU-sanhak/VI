@@ -22,6 +22,16 @@ router.get("/", (req, res) => {
         }
     })
 })
+.get("/get_video/:id", (req, res) => {
+    pool.query("select * from video where c_no = ?", req.params.id, function(err, result) {
+        if(err) {
+            console.log(err);
+            res.send({data: "err"})
+        } else{
+            res.send(result);
+        }
+    })
+})
 .post("/insert", (req, res) => {
     pool.query("insert into video set ?", req.body, function(err, result) {
         if(err) {

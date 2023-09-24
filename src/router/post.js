@@ -12,8 +12,58 @@ router.get("/", (req, res) => {
         }
     })
 })
+.get("/a", (req, res) => {
+    pool.query("select * from post where type = 'a'", function(err, result) {
+        if(err){
+            console.log(err);
+            res.send({data: "err"});
+        } else{
+            res.send(result);
+        }
+    })
+})
+.get("/b", (req, res) => {
+    pool.query("select * from post where type = 'b'", function(err, result) {
+        if(err){
+            console.log(err);
+            res.send({data: "err"});
+        } else{
+            res.send(result);
+        }
+    })
+})
+.get("/c", (req, res) => {
+    pool.query("select * from post where type = 'c'", function(err, result) {
+        if(err){
+            console.log(err);
+            res.send({data: "err"});
+        } else{
+            res.send(result);
+        }
+    })
+})
 .get("/:id", (req, res) => {
     pool.query("select * from post where id = ?", req.params.id, function(err, result) {
+        if(err) {
+            console.log(err);
+            res.send({data: "err"});
+        } else{
+            res.send(result);
+        }
+    })
+})
+.get("/recommend/:id", (req, res) => {
+    pool.query("update post set recommend = recommend + 1 where id = ?", req.params.id, function(err, result) {
+        if(err) {
+            console.log(err);
+            res.send({data: "err"});
+        } else{
+            res.send({data: "ok"});
+        }
+    })
+})
+.get("/get_post/:id", (req, res) => {
+    pool.query("select * from post where writer = ?", req.params.id, function(err, result) {
         if(err) {
             console.log(err);
             res.send({data: "err"})
