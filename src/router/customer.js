@@ -23,6 +23,16 @@ router.get("/", (req, res) => {
         }
     })
 })
+.get("/study_group/:id", (req, res) => {
+    pool.query("select s_name from study_group as a inner join customer as b on a.id = b.study_group where b.id = ?", req.params.id, function(err, result) {
+        if(err){
+            console.log(err);
+            res.send({data: "err"})
+        } else{
+            res.send(result[0].s_name);
+        }
+    })
+})
 .post("/insert", (req, res) => {
     req.body.pwd = crypto(req.body.pwd);
     pool.query("insert into customer set ?", req.body, function(err, result) {
