@@ -7,36 +7,32 @@ const message = document.getElementById('message');
 const message2 = document.getElementById('message2');
 const sentence = document.getElementById("sentence");  
 const videoBlob = document.getElementById("videoBlob");  
+const timerElement = document.getElementById("timer");
 
-const fadeout_duration = 300;
-const opacity_init = 0.1;
-const opacity_step = 0.1;
-const same_expression_skip = 10;
 const ai_feedback_expression = {        //인공지능이 말하는 듯한 메세지
     neutral : ["표정이 경직되어 있어요!","조금만 긴장을 푸세요"],
     happy: ["잘하고 있어요!","조금만 더 웃어봐요"],
     surprised : ["놀라지마세요"],
-    sad : ["표정이 경직되어 있어요!"],
+    sad : ["표정이 경직되어 있어요!"]
 };
 const setting_feedback = {
     setting : ["환경을 체크합니다. 화면에 얼굴이 제대로 인식되는지 확인해주세요", "화면 안으로 들어와주세요", "면접 시작"]
 }
-const timeout = 800;       //렌더링 타임아웃
+const timeout = 800;       //비디오 렌더링 타임아웃
 
-let state = 0;
-let hide = false;
-let inputSize = 224;
+let state = 0;              //면접 상태 체크 변수
+let inputSize = 224;        //영상 설정값
 let scoreThreshold = 0.5;
 let opacity = 0.1;
 
 let same_expression_count = 0;      //이거로 통과 실패 가리면 될듯
-let before_expression = "neutral";
 
-let score = 100;
-var time = 60;
-
-//답변 문장 체크
-let speech_sentence = "";
+let score = 100;            //면접 시작 점수
+let limit_time = 60;        //면접 제한 시간
+let speech_sentence = "";   //사용자 답변 문장 체크
+let recordedChunks = [];    //비디오 데이터 푸쉬할 배열
+let mediaRecorder;          //비디오 객체
+let testValue;              //질문 문장 저장할 변수
 
 //모델 로드
 Promise.all([
@@ -45,11 +41,6 @@ Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
     faceapi.nets.faceExpressionNet.loadFromUri('/models')
 ]).then(startVideo);
-
-let recordedChunks = [];
-let mediaRecorder; 
-
-let testValue;
 
 //비디오 버그 수정용
 const sendmp4 = async (blob) => {
@@ -126,22 +117,33 @@ function startVideo() {
 }
 
 //현재 최고 수치 감정 가져오기
-function get_top_expression(obj){  
-    let default_value = 0;
-    let final_expression;
-    let ret_obj
-    _.mapObject(obj, (v,k) => {
-        if(default_value < v){
-            default_value = v;
-            final_expression = k;
-            ret_obj = {default_value, final_expression}
+function get_top_and_second_expression(obj) {
+    let first_value = -Infinity;  //가장 큰 값을 저장할 변수
+    let second_value = -Infinity; //두 번째로 큰 값을 저장할 변수
+    let first_expression;         //가장 큰 값을 갖는 속성(key)을 저장할 변수
+    let second_expression;        //두 번째로 큰 값을 갖는 속성(key)을 저장할 변수
+
+    _.mapObject(obj, (v, k) => {
+        if (v > first_value) {
+            second_value = first_value;
+            second_expression = first_expression;
+            first_value = v;
+            first_expression = k;
+        } else if (v > second_value && v !== first_value) {
+            second_value = v;
+            second_expression = k;
         }
     });
-    return ret_obj;
+
+    if (second_value === -Infinity) {
+        return null; // 두 번째로 큰 값이 없을 경우
+    }
+
+    return { first_value, first_expression, second_value, second_expression };
 }
 
-//stt함수
-function recBtnHandler() {
+//stt함수(답변 텍스트 변환)
+function startConvert() {
     annyang.start({ autoRestart: true, continuous: false });
     const recognition = annyang.getSpeechRecognizer();
     let final_transcript = "";
@@ -160,14 +162,15 @@ function recBtnHandler() {
         }
       }
     };
-  }
-  
-  $('#myform').on('submit', function() {
-      $('input[name=left_eyes]').attr('value',JSON.stringify(left_eye_list));
-      $('input[name=right_eyes]').attr('value',JSON.stringify(right_eye_list));
-      $('input[name=score]').attr('value',JSON.stringify(score));
-      return true;
-  });
+}
+
+//submit 액션 발생 시
+$('#myform').on('submit', function() {
+    $('input[name=left_eyes]').attr('value',JSON.stringify(left_eye_list));
+    $('input[name=right_eyes]').attr('value',JSON.stringify(right_eye_list));
+    $('input[name=score]').attr('value',JSON.stringify(score));
+    return true;
+});
 
 const emotionCounts = {
     happy: 0,
@@ -177,43 +180,43 @@ const emotionCounts = {
     angry: 0
 };
 let feedback;
+let prev_face;
+function evaluation(obj){
+    let first_value = obj["first_value"]
+    let first_expression = obj["first_expression"];
+    let second_value = obj["second_value"]
+    let second_expression = obj["second_expression"];
+    
+    switch (first_expression) {
+        case 'happy':
+            if(first_value > 0.75){
+                score += 1;
+            }
+            else if(first_value > 0.6)score += 0.5;
+            break;
+        case 'neutral':
+            if(first_value >= 0.7)if(second_expression === 'angry')score -= 0.2;
+            else if(first_value > 0.4 && first_value < 0.7){
+                if(second_expression === 'angry')score -= 0.5;
+                else score -= 0.3;
+            }
+            else if(first_value <= 0.4) score -= 1
+            break;
+        case 'sad':
+            if(second_expression === 'angry')score -= 2;
+            else score -= 1.5;
+            break;
+        case 'surprised':
+            break;
+        case 'angry':
+            score -= 3;
+            break;
+        default:
+            console.log("인식 안됨");
+            break;
+    }
 
-function ai_talk(obj){
-    let value = obj["default_value"];
-    let expression = obj["final_expression"];
-        
-    if(expression == 'happy'){
-        if(value <= 0.6 && value > 0.3){
-            feedback = 'happy';
-        }
-    }
-    else if(expression == 'neutral'){
-        if(value > 0.6){
-            prev_face = 'neutral';
-        }
-        else if(value <= 0.6 && value > 0.3){
-            prev_face = 'neutral';
-            if(prev_face !== 'neutral')
-                score -= 4;
-        }
-    }
-    else if(expression == 'sad'){
-        prev_face = 'sad';
-        if(value > 0.6){
-            score -= 8;
-        }
-    }
-    else if(expression == 'surprised'){
-        //ai.innerHTML = ai_feedback_expression['happy']['1']; 
-    }
-    else if(expression == 'angry'){
-        score -= 5;
-        //ai.innerHTML = ai_feedback_expression['happy']['1']; 
-    }
-    else{
-        //ai.innerHTML = "화면 안으로 들어와주세요"; 
-    }
-    emotionCounts[expression]++;
+    emotionCounts[first_expression]++;
     console.log(emotionCounts);
     console.log(score);
 }
@@ -227,7 +230,7 @@ function getFaceDetectorOptions(){
 const left_eye_list = [];
 const right_eye_list  = [];
 
-//시작함수
+//모델 불러오기 시작함수
 async function onPlay(){
     const videoEl = $('video').get(0);      //비디오 가져오기(제이쿼리사용)
     if(videoEl.paused || videoEl.ended){    //비디오 멈추거나 끝나면
@@ -240,11 +243,9 @@ async function onPlay(){
 
 
     if(detections){ //제대로 가져왔으면
-
          //눈좌표 평균 구하기위해서 얼굴인식에서 눈의 6개의 랜드마크 좌표를 가져와 평균을구한뒤 list에 넣어줬다.
          const getLeftEye = detectionWithLandmarks.landmarks.getLeftEye();
          const getRigtEye = detectionWithLandmarks.landmarks.getRightEye();
-             //console.log(getLeftEye.length);
          let left_sumX = 0; let left_sumY = 0;let right_sumX = 0; let right_sumY = 0; 
          for(let i = 0 ; i<6 ; i++){
              left_sumX += getLeftEye[i]._x;
@@ -256,51 +257,37 @@ async function onPlay(){
          const right_coordinate  = { x:Math.round(right_sumX/6), y:Math.round(right_sumY/6)};
          left_eye_list.push(left_coordinate);
          right_eye_list.push(right_coordinate);
-         //console.log(left_eye_list);
-         //console.log(right_eye_list);
 
         const dims = faceapi.matchDimensions(canvas, videoEl, true);
         const resizedResult = faceapi.resizeResults(detections, dims);
         const minConfidence = 0.05;     //주어진 수치 사용한다
+        message2.innerHTML = "인식 성공";
         try{    //트라이 성공
-            if(state == 1){
-                message.innerHTML = setting_feedback['setting']['2']
-                const expression = get_top_expression(resizedResult.expressions);    //여러 감정 중 가장 높은 수치의 감정을 가져옴
-                //console.log(expression);
-                ai_talk(expression);      
-            }
-            else if(state == 2){
-                message.innerHTML = "면접 질문 중";
-                message2.innerHTML = "";
-                //ai.innerHTML = "";
-                
-            }
-            else{
-                message.innerHTML = setting_feedback['setting']['0'];
-                message2.innerHTML = "인식 성공";
-                //ai.innerHTML = "";
+            if(state == 0){
                 faceapi.draw.drawDetections(canvas, resizedResult);
                 faceapi.draw.drawFaceLandmarks(canvas, resizedResult);
                 faceapi.draw.drawFaceExpressions(canvas, resizedResult, minConfidence);
+            }
+            else{   //면접시작 클릭 전 대기화면
+                const expression = get_top_and_second_expression(resizedResult.expressions);
+                console.log(expression);
+                evaluation(expression);
+                //ai.innerHTML = "";
+                //console.log(resizedResult.expressions.neutral);
+                //faceapi.draw.drawDetections(canvas, resizedResult);
+                //faceapi.draw.drawFaceLandmarks(canvas, resizedResult);
+                //faceapi.draw.drawFaceExpressions(canvas, resizedResult, minConfidence);
             } 
         }catch(e){
-            //console.error(e.message);
+            console.error(e.message);
         }
-     
     }else{
-        if(state == 0)message2.innerHTML = "화면 안으로 들어와주세요";
-        //else 
-        //else if(state == 1) ai.innerHTML = "화면 안으로 들어와주세요"; 
+        if(state == 0)message2.innerHTML = "얼굴 인식 중";
     }
 }
 
-video.addEventListener('play', async () => {      //비디오 켜지면 이벤트리스너 실행
-    setInterval(async () => {
-        onPlay();
-    }, timeout)
-});
 
-// 이벤트 영역
+//사용자 답변 텍스트 변환 함수
 const selectLang = "ko-KR"
 
 function speak(text, opt_prop) {
@@ -332,6 +319,53 @@ function speak(text, opt_prop) {
     });
 }
 
+//면접시간 카운트 함수
+let countdown;
+
+function startCountdown(seconds) {
+    //처음 화면에 보여줄 초 설정
+    displayTimeLeft(seconds);
+
+    const startTime = Date.now(); //현재 시간 기록
+
+    countdown = setInterval(() => {
+        const elapsedTime = Math.floor((Date.now() - startTime) / 1000); //경과 시간 (초)
+        const remainingSeconds = seconds - elapsedTime;
+
+        //남은 시간이 0보다 작으면 타이머 종료
+        if (remainingSeconds < 0) {
+            clearInterval(countdown);
+            const finishEvent = new Event('finish');    //이벤트 생성
+            document.dispatchEvent(finishEvent);        //이벤트 발생
+            return;
+        }
+
+        displayTimeLeft(remainingSeconds); //남은 시간 표시
+    }, 1000); //1초마다 업데이트
+}
+
+//시간을 화면에 표시하는 함수
+function displayTimeLeft(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainderSeconds = seconds % 60;
+    const display = `${minutes}:${remainderSeconds < 10 ? '0' : ''}${remainderSeconds}`;
+    timerElement.textContent = display;
+}
+
+
+
+//이벤트 영역
+
+//비디오 켜지면 이벤트리스너 실행(모델로드 시작)
+video.addEventListener('play', async () => {      
+    message.innerHTML = setting_feedback['setting']['0'];
+    message2.innerHTML = "화면 안으로 들어와주세요";
+    state = 0;
+    setInterval(async () => {
+        onPlay();
+    }, timeout)
+});
+
 //페이지 로드되면 실행
 document.addEventListener("DOMContentLoaded", function() {
     const testElement = document.querySelector('h1');   //서버에서 동적으로 보낸 h1값 가져옴
@@ -351,16 +385,21 @@ playBtn.addEventListener('click', () => {
     state = 2; //질문 출력
     let text = testValue;
 
+    message.innerHTML = "면접 질문 중";
+    message2.style.display = "none"; 
     speak(text, {
-        rate: 0.62,
-        pitch: 0.8,
+        rate: 0.75,     //속도 조절
+        pitch: 0.8,     //
         lang: selectLang
     }).then(() => {
         //음성 출력 종료 후 상태 변경
         state = 1;
-
-        recBtnHandler();
         mediaRecorder.start();
+        startConvert();  
+    }).then(() => {
+        message.innerHTML = setting_feedback['setting']['2']
+        startCountdown(limit_time); // 60초부터 시작
+        timerElement.style.display = "block";       //전부 실행되면 타이머 시간표시(면접시간 카운트시작)
     }).catch((error) => {
         console.error("음성 합성 오류: ", error);
     });
@@ -382,4 +421,12 @@ stopBtn.addEventListener('click', async () => {
     form.appendChild(hiddenInput);
 
     //speech_sentence = "";
+});
+
+//finish 이벤트
+document.addEventListener('finish', () => {
+    stopBtn.click(); //stopBtn 클릭 이벤트 실행
+    if (typeof mediaRecorder.onstop === 'function') {
+        mediaRecorder.onstop();
+    }
 });

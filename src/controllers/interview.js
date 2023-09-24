@@ -1,8 +1,6 @@
 const QuestionList = require('../model/question_list');     //통상적으로 클래스는 대문자로 설정
 const FaceEvaluation = require('../model/faceEvaluation'); 
 
-const express = require("express");
-
 const fs = require('fs');
 const path = require('path');
 
@@ -18,7 +16,6 @@ const path = require('path');
 exports.startInterview = (req, res, next) => {
     QuestionList.randomExtract()
     .then(([rows]) => {    //여기서 인자의 rows는 가져온 중첩 배열(메타데이터)에서 첫 번째 요소가 될 것이고, fieldData는 두 번쨰 요소
-        console.log(rows);
         res.render('interview', {
             test: rows[0].q_content,
             pageTitle: 'Shop',
@@ -120,14 +117,4 @@ exports.convert = (req, res, next) => {
       
         res.write(searchData); */
     });    
-};
-
-exports.test = (req, res, next) => {
-    const url = 'test';
-    const c_no = 5;
-    const score = 90;
-    const faceevaluation = new FaceEvaluation(null, c_no, url, score);
-    faceevaluation.save().then(() => {
-        res.redirect('/test2');
-    }).catch(err => console.log(err));
 };

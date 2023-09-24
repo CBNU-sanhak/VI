@@ -96,11 +96,23 @@ const awsUpload = multer({
 
 const FaceEvaluation = require('./model/faceEvaluation'); //표정평가 모델 클래스
 // 파일 첨부
-app.post("/file", awsUpload.single("file"), (req, res) => {
+// app.post("/file", awsUpload.single("file"), (req, res) => {
+//     //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)
+//     const url = req.file.location;      //동영상 url
+//     const c_no = 5;             //고객번호 (테스트용)
+//     const score = parseFloat(req.body.score);   //평가점수
+//     const faceevaluation = new FaceEvaluation(null, c_no, url, score);
+//     faceevaluation.save().then(() => {
+//         console.log('save complete');
+//     }).catch(err => console.log(err));
+//     console.log(url);
+//     //res.send({data: req.file.location});
+// })
+app.post("/file", (req, res) => {
     //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)
-    const url = req.file.location;      //동영상 url
+    const url = 'test';      //동영상 url
     const c_no = 5;             //고객번호 (테스트용)
-    const score = parseFloat(req.body.score);   //평가점수
+    const score = 50;   //평가점수
     const faceevaluation = new FaceEvaluation(null, c_no, url, score);
     faceevaluation.save().then(() => {
         console.log('save complete');

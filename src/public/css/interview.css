@@ -116,3 +116,19 @@ canvas{
     box-shadow: 200px 0 0 0 rgba(0,0,0,0.25) inset, 
     -200px 0 0 0 rgba(0,0,0,0.25) inset;
 }
+
+#timer {
+    z-index: 10;
+    position: absolute;
+    width: 100vw;
+    height: 5vh;
+    left: 0;
+    top:80px;
+    color : red;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 5vh;
+    font-size: 36px;
+    display: none;
+}
