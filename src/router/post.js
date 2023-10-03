@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
     })
 })
 .get("/a", (req, res) => {
-    pool.query("select * from post where type = 'a'", function(err, result) {
+    pool.query("select * from post where category = 'a'", function(err, result) {
         if(err){
             console.log(err);
             res.send({data: "err"});
@@ -23,7 +23,7 @@ router.get("/", (req, res) => {
     })
 })
 .get("/b", (req, res) => {
-    pool.query("select * from post where type = 'b'", function(err, result) {
+    pool.query("select * from post where category = 'b'", function(err, result) {
         if(err){
             console.log(err);
             res.send({data: "err"});
@@ -33,7 +33,7 @@ router.get("/", (req, res) => {
     })
 })
 .get("/c", (req, res) => {
-    pool.query("select * from post where type = 'c'", function(err, result) {
+    pool.query("select * from post where category = 'c'", function(err, result) {
         if(err){
             console.log(err);
             res.send({data: "err"});
