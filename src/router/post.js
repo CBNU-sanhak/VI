@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require("../mysql/index.js");
 
 router.get("/", (req, res) => {
-    pool.query("select * from post", function(err, result) {
+    pool.query("select a.*, b.nickname from post as a join customer as b on a.writer = b.id", function(err, result) {
         if(err){
         console.log(err);
         res.send({data: "err"})
@@ -42,8 +42,9 @@ router.get("/", (req, res) => {
         }
     })
 })
+//post id로 해당 post 내용 조회
 .get("/:id", (req, res) => {
-    pool.query("select * from post where id = ?", req.params.id, function(err, result) {
+    pool.query("select a.*, b.nickname from post as a join customer as b on a.writer = b.id where a.id = ?", req.params.id, function(err, result) {
         if(err) {
             console.log(err);
             res.send({data: "err"});
@@ -62,8 +63,9 @@ router.get("/", (req, res) => {
         }
     })
 })
+//고객 id를 활용해서 해당 고객이 만든 post 반환
 .get("/get_post/:id", (req, res) => {
-    pool.query("select * from post where writer = ?", req.params.id, function(err, result) {
+    pool.query("select a.*, b.nickname from post as a join customer as b on a.writer = b.id where a.writer = ?", req.params.id, function(err, result) {
         if(err) {
             console.log(err);
             res.send({data: "err"})
