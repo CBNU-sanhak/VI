@@ -332,7 +332,8 @@ app.post("/login", (req, res) => {
             } else{
                 req.session.is_logined = true;
                 req.session.nickname = results[0].nickname;
-                req.session.id = results[0].id;
+                req.session.ide = results[0].id;
+                req.session.ident = results[0].ident;
                 req.session.save(function(){
                     res.send({
                         data: "true"
@@ -343,28 +344,34 @@ app.post("/login", (req, res) => {
     })
 })
 
-
-app.post('/login_process', async function (req, res) {
-    let ident = req.body.ident;
-    let pwd = crypto.createHashPassword(req.body.pwd);
-    if(ident && pwd) {
-        const result = await mysql.query('login', [ident, pwd]);
-        if(results.length > 0 ) {
-            req.session.is_logined = true;
-            req.session.nuckname = result[0].nuckname;
-            req.session.ident = ident;
-            req.session.save(function () {
-                res.redirect('/');
-            });
-        } else {
-            res.send(`<script type="text/javascript">alert("로그인 정보가 일치하지 않습니다."); 
-                document.location.href="/login";</script>`);
-        }
-    } else {
-        res.send(`<script type="text/javascript">alert("아이디와 비밀번호를 입력하세요!"); 
-        document.location.href="/login";</script>`);
+//로그인 여부 확인
+app.get("/auth_check", (req, res) => {
+    if(req.session.is_logined == true) {
+        res.send({
+            data: "true",
+            nickname: req.session.nickname,
+            ident: req.session.ident,
+            id: req.session.ide
+        })
+    } else{
+        res.send({
+            data: "false"
+        })
     }
 });
+
+//ident값으로 id 가져오기
+app.get("/get_id/:ident",(req, res) => {
+    pool.query("select id from customer where ident = ?", req.params.ident, function(err, result){
+        if(err){
+            res.send({
+                data: "err"
+            })
+        } else{
+            res.send(result)
+        }
+    })
+})
 
 app.get('/login', (req,res)=>{
     res.sendFile(__dirname +'/views/login.html')
