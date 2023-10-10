@@ -264,9 +264,9 @@ async function onPlay(){
         message2.innerHTML = "인식 성공";
         try{    //트라이 성공
             if(state == 0){
-                faceapi.draw.drawDetections(canvas, resizedResult);
-                faceapi.draw.drawFaceLandmarks(canvas, resizedResult);
-                faceapi.draw.drawFaceExpressions(canvas, resizedResult, minConfidence);
+                //faceapi.draw.drawDetections(canvas, resizedResult);
+                //faceapi.draw.drawFaceLandmarks(canvas, resizedResult);
+                //faceapi.draw.drawFaceExpressions(canvas, resizedResult, minConfidence);
             }
             else{   //면접시작 클릭 전 대기화면
                 const expression = get_top_and_second_expression(resizedResult.expressions);
@@ -409,7 +409,7 @@ stopBtn.addEventListener('click', async () => {
     if (mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
     }
-    
+
     const emotionCountsJSON = JSON.stringify(emotionCounts);
 
     const hiddenInput = document.createElement('input');
@@ -427,6 +427,6 @@ stopBtn.addEventListener('click', async () => {
 document.addEventListener('finish', () => {
     stopBtn.click(); //stopBtn 클릭 이벤트 실행
     if (typeof mediaRecorder.onstop === 'function') {
-        mediaRecorder.onstop();
+        //mediaRecorder.onstop(); //이게 문젠가?
     }
 });
