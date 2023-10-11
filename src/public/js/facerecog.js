@@ -33,6 +33,7 @@ let speech_sentence = "";   //사용자 답변 문장 체크
 let recordedChunks = [];    //비디오 데이터 푸쉬할 배열
 let mediaRecorder;          //비디오 객체
 let testValue;              //질문 문장 저장할 변수
+let q_no;
 
 //모델 로드
 Promise.all([
@@ -52,10 +53,12 @@ const sendmp4 = async (blob) => {
     const fd = new FormData();
     fd.append("fname", filename);
     fd.append("file", file);
+
     fd.append("score", score);
     fd.append("left_eyes", JSON.stringify(left_eye_list));
     fd.append("right_eyes", JSON.stringify(right_eye_list));
     fd.append("sentence", speech_sentence);
+    fd.append("q_no", q_no);
   
     try {
         const response = await fetch("http://localhost:3001/file", {
@@ -354,7 +357,7 @@ function displayTimeLeft(seconds) {
 
 
 
-//이벤트 영역
+/////////////////이벤트 영역
 
 //비디오 켜지면 이벤트리스너 실행(모델로드 시작)
 video.addEventListener('play', async () => {      
@@ -369,9 +372,11 @@ video.addEventListener('play', async () => {
 //페이지 로드되면 실행
 document.addEventListener("DOMContentLoaded", function() {
     const testElement = document.querySelector('h1');   //서버에서 동적으로 보낸 h1값 가져옴
+    const q_noElement = document.querySelector('h2');
 
     if (testElement) {
         testValue = testElement.textContent; 
+        q_no = q_noElement.textContent; 
         //console.log(testValue); 
     } else {
         console.log('h1어딨누');

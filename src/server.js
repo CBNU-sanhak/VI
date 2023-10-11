@@ -26,6 +26,7 @@ const multer = require("multer");
 
 //라우터 시험
 const interviewRoutes = require('./router/interview');  //면접페이지 라우터 추가
+const mypageRoutes = require('./router/mypage');  //마이페이지(면접기록 확인) 라우터 추가
 const errorController = require('./controllers/error'); //라우팅 에러 페이지
 
 require("dotenv").config({path : path.join(__dirname, './env/.env')});
@@ -76,6 +77,7 @@ app.use("/gaze_evaluation", gaze_evaluation_router);
 app.use("/result", result_router);
 //준희추가
 app.use(interviewRoutes);
+app.use(mypageRoutes);
 
 // aws s3 저장소 연결
 aws.config.loadFromPath(path.join(__dirname, 's3.json'));
@@ -94,18 +96,56 @@ const awsUpload = multer({
 })
 
 const FaceEvaluation = require('./model/faceEvaluation'); //표정평가 모델 클래스
-// 파일 첨부
-app.post("/file", awsUpload.single("file"), (req, res) => {
+const Video = require('./model/video'); //비디오 모델 클래스
+const GazeEvaluation = require('./model/gazeEvaluation');
+//파일 첨부
+app.post("/file", awsUpload.single("file"), async (req, res) => {
     //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)
-    const url = req.file.location;      //동영상 url
-    const c_no = 5;             //고객번호 (테스트용)
-    const score = parseFloat(req.body.score);   //평가점수
-    const faceevaluation = new FaceEvaluation(null, c_no, url, score);
-    faceevaluation.save().then(() => {
-        console.log('save complete');
-    }).catch(err => console.log(err));
-    console.log(url);
-    //res.send({data: req.file.location});
+    try{
+        const url = req.file.location;      //동영상 url
+        const c_no = 5;             //고객번호 (테스트용)
+        const q_no = req.body.q_no;
+        const answer = req.body.sentence;
+        const score = parseFloat(req.body.score);   //표정평가점수
+        const left_eyes = JSON.stringify(req.body.left_eyes);
+        const right_eyes = JSON.stringify(req.body.right_eyes);
+        let v_no;
+        let result = '산만함';  //테스트용
+
+        //비디오 DB저장
+        const video = new Video(null, c_no, q_no, answer, url);
+        await video.save().then(() => {
+            console.log('비디오 저장완료');
+        }).catch(err => console.log(err));
+        //해당 비디오 id 가져오기
+        await video.find_last_id().then((result) => {
+            v_no = result[0][0].id;
+        }).catch(err => console.log(err));
+
+        //시선평가 DB저장
+        const gaze_evaluation = new GazeEvaluation(null, c_no, v_no, result, left_eyes, right_eyes);
+        await gaze_evaluation.save().then(() => {
+            console.log('시선평가 저장완료');
+        }).catch(err => console.log(err));
+
+        GazeEvaluation.get_left_coordinate(v_no)
+        .then(result => {
+            const coordinateData = result[0][0];
+            const leftEyes = JSON.parse(coordinateData.left_eyes);
+            console.log(leftEyes);
+            GazeEvaluation.updateEvaluation('테스트', v_no).then(()=> {console.log('업데이트 완료')});
+            res.send(result); // 브라우저에 결과를 보내거나 다른 작업을 수행
+        })
+        .catch(error => {
+            console.error(error);
+        });
+        // const faceevaluation = new FaceEvaluation(null, c_no, url, score);
+        // faceevaluation.save().then(() => {
+        //     console.log('save complete');
+        // }).catch(err => console.log(err));
+        // console.log(url);
+        //res.send({data: req.file.location});
+    }catch(err){console.log(err);}
 })
 // app.post("/file", (req, res) => {
 //     //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)

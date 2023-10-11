@@ -1,0 +1,34 @@
+const db = require('../util/database');
+
+module.exports = class Video {
+  constructor(sn, c_no, q_no, answer, url) {
+    this.sn = sn;           //비디오 S/N
+    this.c_no = c_no;       //고객번호
+    this.q_no = q_no;       //질문번호
+    this.answer = answer;   //고객답변
+    this.v_date = new Date().toISOString().slice(0, 19).replace('T', ' '); //현재 날짜
+    this.url = url;         //동영상주소
+  }
+
+  save() {    //sn은 자동증가로 설정해놨음
+   return db.execute('INSERT INTO video (c_no, q_no, answer, v_date, url) VALUES (?, ?, ?, ? ,?)', 
+    [this.c_no, this.q_no, this.answer, this.v_date, this.url]   
+   );
+  }
+
+  find_last_id(){
+    return db.execute('SELECT video.id FROM video ORDER BY id DESC LIMIT 1');
+  }
+
+  static deleteById(id) {
+    
+  }
+
+  static fetchAll(c_no) {   //모든 정보 출력
+   return db.execute('SELECT * FROM video WHERE c_no = ?', [c_no]);
+  }
+
+  static search_video(v_no) {   //모든 정보 출력
+    return db.execute('SELECT * FROM video WHERE id = ?', [v_no]);
+   }
+};

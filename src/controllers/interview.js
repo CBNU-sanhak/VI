@@ -1,5 +1,6 @@
 const QuestionList = require('../model/question_list');     //통상적으로 클래스는 대문자로 설정
 const FaceEvaluation = require('../model/faceEvaluation'); 
+const GazeEvaluation = require('../model/gazeEvaluation'); 
 
 const fs = require('fs');
 const path = require('path');
@@ -18,6 +19,7 @@ exports.startInterview = (req, res, next) => {
     .then(([rows]) => {    //여기서 인자의 rows는 가져온 중첩 배열(메타데이터)에서 첫 번째 요소가 될 것이고, fieldData는 두 번쨰 요소
         res.render('interview', {
             test: rows[0].q_content,
+            q_no: rows[0].q_no,
             pageTitle: 'Shop',
             path: '/interview'
         });
@@ -117,4 +119,24 @@ exports.convert = (req, res, next) => {
       
         res.write(searchData); */
     });    
+};
+
+exports.evaluation = (req, res, next) => {
+    const v_no = req.query.v_no;
+    GazeEvaluation.get_left_coordinate(v_no)
+        .then(result => {
+            // 결과를 이곳에서 처리
+            const coordinateData = result[0][0];
+            const leftEyes = JSON.parse(coordinateData.left_eyes);
+
+            //로직
+            GazeEvaluation.evaluation(leftEyes);
+
+            //업데이트
+            GazeEvaluation.updateEvaluation('테스트', v_no).then(()=> {console.log('업데이트 완료')});
+            res.send(result); // 브라우저에 결과를 보내거나 다른 작업을 수행
+        })
+        .catch(error => {
+            console.error(error);
+        });
 };

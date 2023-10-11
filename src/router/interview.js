@@ -16,4 +16,6 @@ router.get('/getEyearray', interviewController.getEyearray);
 
 router.post('/convert', interviewController.convert);
 
+router.get('/evaluation', interviewController.evaluation);
+
 module.exports = router;

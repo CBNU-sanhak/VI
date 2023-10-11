@@ -1,0 +1,11 @@
+html
+  head
+    title= pageTitle
+  body
+    h1= pageTitle
+    ul
+      each video in results
+        li
+          a(href=`/mypage/video/${video.id}`)  
+            h2 S/N: #{video.id}
+          p 비디오 주소: #{video.url}

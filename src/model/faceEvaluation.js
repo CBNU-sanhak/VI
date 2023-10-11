@@ -9,7 +9,7 @@ module.exports = class QuestionList {
   }
 
   save() {    //sn은 자동증가로 설정해놨음
-   return db.execute('INSERT INTO faceevaluation (c_no, url, score) VALUES (?, ?, ?)', 
+   return db.execute('INSERT INTO face_evaluation (c_no, url, score) VALUES (?, ?, ?)', 
     [this.c_no, this.url, this.score]   
    );
   }
@@ -19,6 +19,6 @@ module.exports = class QuestionList {
   }
 
   static fetchAll() {   //모든 정보 출력
-   return db.execute('SELECT * FROM faceevaluation');
+   return db.execute('SELECT * FROM face_evaluation');
   }
 };
