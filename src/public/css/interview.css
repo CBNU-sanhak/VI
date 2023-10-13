@@ -132,3 +132,7 @@ canvas{
     font-size: 36px;
     display: none;
 }
+
+#webcam-video-container{
+    display: none;
+}
