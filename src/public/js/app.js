@@ -101,7 +101,7 @@ async function getMedia(deviceId){
         myFace.muted = true;
         if(!deviceId){
             // mute default
-      myStream //
+      myStream 
       .getAudioTracks()
       .forEach((track) => (track.enabled = false));
 

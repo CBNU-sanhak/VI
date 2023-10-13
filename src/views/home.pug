@@ -6,22 +6,24 @@ html(lang='en')
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title Noom 
         //link(rel="stylesheet", href="public/css/mvp.css")
-        link(rel="stylesheet", href="public/css/reset.css")
-        link(rel="stylesheet", href="public/css/common.css")
-        link(rel="stylesheet", href="public/css/layout/welcome.css")
-        link(rel="stylesheet", href="public/css/layout/control.css")
-        link(rel="stylesheet", href="public/css/layout/chat.css")
-        link(rel="stylesheet", href="public/css/elements/button.css")
-        link(rel="stylesheet", href="public/css/elements/bubble.css")
+        link(rel="stylesheet", href="/public/css/reset.css")
+        link(rel="stylesheet", href="/public/css/common.css")
+        link(rel="stylesheet", href="/public/css/layout/welcome.css")
+        link(rel="stylesheet", href="/public/css/layout/control.css")
+        link(rel="stylesheet", href="/public/css/layout/chat.css")
+        link(rel="stylesheet", href="/public/css/elements/button.css")
+        link(rel="stylesheet", href="/public/css/elements/bubble.css")
         link(rel="shortcut icon", href="#")
     body 
         header 
-            h1 VI
+            h1 스터디 그룹
         main 
             div#welcome
                 form.welcome-form
                     input(placeholder="Room Name", required, type="text")
                     button Enter room
+                    div 
+                        button 스터디 그룹 생성
                 div.open 
                     h4 Open Rooms
                          ul.rooms

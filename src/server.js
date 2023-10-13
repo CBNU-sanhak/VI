@@ -32,7 +32,7 @@ require("dotenv").config({path : path.join(__dirname, './env/.env')});
 
 const app = express();
 
-app.set("view engine", "pug");
+app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 
 const corsOptions = {
@@ -53,7 +53,7 @@ app.use(session({
     cookie: { maxAge: 86400000 },
 }));
 
-app.use("/public", express.static(__dirname + "/public"));
+app.use("/public", express.static(path.join(__dirname, "/public")));
 app.use("/speech", express.static(__dirname + "/speech"));
 app.use('/images', express.static(__dirname + '/images'));
 app.use('/models', express.static(__dirname + '/models'));
@@ -95,6 +95,12 @@ const awsUpload = multer({
 
 
 const FaceEvaluation = require('./model/faceEvaluation'); //표정평가 모델 클래스
+//사진 첨부
+app.post("/image", awsUpload.single("file"), (req, res) => {
+    res.send({data: req.file.location});
+})
+
+
 // 파일 첨부
 // app.post("/file", awsUpload.single("file"), (req, res) => {
 //     //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)
@@ -231,9 +237,18 @@ app.get("/test2", (req, res) => res.sendFile(__dirname +'/views/test2.html'));
 
 app.get("/", (req, res) => res.sendFile(__dirname +'/views/index.html'));
 //추가
-app.get('/home', (req,res)=>{
-    res.render('home')
-})
+app.get('/home/:id', (req,res)=>{
+    pool.query("select nickname from customer where id = ?", req.params.id, function(err, results) {
+        if(err){
+            console.log(err);
+        } else{
+            res.render('home', {
+                nickname: results[0].nickname
+            })
+        }
+    })
+
+});
 
 //아이디 중복 확인
 app.post('/id_check', (req, res) => {
