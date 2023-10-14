@@ -25,7 +25,7 @@ router.get("/", (req, res) => {
 })
 //특정 게시글의 모든 댓글 보기
 .get("/post/:id", (req, res) => {
-    pool.query("select * from comments where p_no = ?", req.params.id, function(err, result) {
+    pool.query("select a.*, b.nickname from comments as a join customer as b on a.writer = b.id where a.p_no = ?", req.params.id, function(err, result) {
         if(err) {
             console.log(err);
             res.send({data: "err"})
@@ -36,7 +36,7 @@ router.get("/", (req, res) => {
 })
 //특정 작성자의 모든 댓글 보기
 .get("/writer/:id", (req, res) => {
-    pool.query("select * from comments where writer = ?", req.params.id, function(err, result) {
+    pool.query("select a.*, b.nickname from comments as a join customer as b on a.writer = b.id where a.writer = ?", req.params.id, function(err, result) {
         if(err) {
             console.log(err);
             res.send({data: "err"})

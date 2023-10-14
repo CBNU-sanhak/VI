@@ -15,7 +15,7 @@ let myStream;
 let muted = true;
 let cameraOff = false;
 let roomName;
-let nickName = "Anon";
+// let nickName = "Anon";
 
 let pcObj = {
     // remoteSocketId: pc
@@ -23,13 +23,23 @@ let pcObj = {
 
 //실시간 채팅
 const room = document.getElementById("myStream");
-
+const chat = document.getElementById("chat");
 //메세지 생성 함수
-function addMessage(message){
+function addMessage(message, type){
     const ul = room.querySelector("ul");
     const li = document.createElement("li");
-    li.innerText = message;
-    ul.insertBefore(li, ul.firstChild);
+// true는 본인메세지 false는 다른사람 메세지
+    if(type){
+        li.className="me"
+        li.innerText = message;
+        ul.appendChild(li);
+    } else{
+        li.className="others"
+        li.innerText = message;
+        ul.appendChild(li);
+    }
+    ul.scrollTo(0, ul.scrollHeight);
+    // ul.insertBefore(li, ul.firstChild);
 }
 
 //메세지 전달 함수
@@ -38,27 +48,27 @@ function handleMessageSubmit(event){
     const input = room.querySelector("#chatForm input");
     const value = input.value;
     socket.emit("new_message", value, roomName, () => {
-        addMessage(`you: ${value}`);
+        addMessage(`you: ${value}`, true);
     });
     input.value = "";
 }
 
-//닉네임 전달 함수
-function handleNicknameSubmit(event){
-    event.preventDefault();
-    const input = room.querySelector("#nickname input");
-    const value = input.value;
-    socket.emit("nickname", value);
-    nickName = value;
-    const h3 = room.querySelector("h4");
-    h3.innerText = `NICKNAME: ${nickName}`;
-    input.value = "";
-}
+// //닉네임 전달 함수
+// function handleNicknameSubmit(event){
+//     event.preventDefault();
+//     const input = room.querySelector("#nickname input");
+//     const value = input.value;
+//     socket.emit("nickname", value);
+//     nickName = value;
+//     const h3 = room.querySelector("h4");
+//     h3.innerText = `NICKNAME: ${nickName}`;
+//     input.value = "";
+// }
 
 const msgForm = room.querySelector("#chatForm");
-const nickForm = room.querySelector("#nickname");
+// const nickForm = room.querySelector("#nickname");
 msgForm.addEventListener("submit", handleMessageSubmit);
-nickForm.addEventListener("submit", handleNicknameSubmit);
+// nickForm.addEventListener("submit", handleNicknameSubmit);
 
 
 async function getCameras(){
@@ -98,10 +108,10 @@ async function getMedia(deviceId){
             deviceId ? cameraConstraints: initialConstraints
             );
         myFace.srcObject = myStream;
-        myFace.muted = true;
+        // myFace.muted = true;
         if(!deviceId){
             // mute default
-      myStream //
+      myStream 
       .getAudioTracks()
       .forEach((track) => (track.enabled = false));
 
@@ -165,9 +175,13 @@ const list = welcome.querySelector("ul");
 
 call.hidden = true;
 
+const nickname = document.getElementById("nickname");
+
 async function initCall(){
     welcome.hidden = true;
     call.hidden = false;
+    console.log(nickname.innerText);
+    socket.emit("nickname", nickname.innerText);
     await getMedia();
     // makeConnection(); 없앴음
 }
@@ -185,12 +199,13 @@ async function handleWelcomeSubmit(event){
     // await initCall();
     const h3 = room.querySelector("h3");
     h3.innerText = `ROOM: ${roomName}`;
-    const h4 = room.querySelector("h4");
-    h4.innerText = `NICKNAME: ${nickName}`;
+    // const h4 = room.querySelector("h4");
+    // h4.innerText = `NICKNAME: ${nickName}`;
     input.value="";
     socket.emit("join_room", roomName);
 }
 
+//채팅방 목록에 있는 채팅방 이름 클릭시
 async function handleWelcomeSubmit2(event){
     event.preventDefault();
     if (socket.disconnected) {
@@ -199,8 +214,8 @@ async function handleWelcomeSubmit2(event){
     // await initCall();
     const h3 = room.querySelector("h3");
     h3.innerText = `ROOM: ${roomName}`;
-    const h4 = room.querySelector("h4");
-    h4.innerText = `NICKNAME: ${nickName}`;
+    // const h4 = room.querySelector("h4");
+    // h4.innerText = `NICKNAME: ${nickName}`;
     socket.emit("join_room", roomName);
 }
 
@@ -282,7 +297,7 @@ socket.on("ice", async (ice, remoteSocketId) => {
 });
 
 socket.on("new_message", (msg) => {
-    addMessage(msg);
+    addMessage(msg, false);
 });
 
 socket.on("room_change", (rooms) => {

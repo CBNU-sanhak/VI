@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/css/reset.css">
+    <link rel="stylesheet" href="/public/css/common.css">
+    <link rel="stylesheet" href="/public/css/layout/welcome.css">
+    <link rel="stylesheet" href="/public/css/layout/control.css">
+    <link rel="stylesheet" href="/public/css/layout/chat.css">
+    <link rel="stylesheet" href="/public/css/elements/button.css">
+    <link rel="stylesheet" href="/public/css/elements/bubble.css">
+    <link rel="shortcut icon" href="#">
+    <title>Study Group</title>
+</head>
+<body>
+    <header>
+        <h1>스터디 그룹</h1>
+    </header>
+    <main>
+        <div id="welcome">
+            <form class="welcome-form"></form>
+                <input placeholder="Room Name", required, type="text">
+                <button>Enter room</button>
+                <button>스터디 그룹 생성</button>
+            <div class="open">
+                <h4>Open Rooms</h4>
+                    <ul id="rooms"></ul>
+            </div>
+        </div>            
+        <div id="call" class="call">
+            <div id="myStrream">
+                <h3></h3>
+                <h4></h4>
+                <div class="control">
+                    <button id="mute">UnMute</button>
+                    <button id="camera">Turn Camera Off</button>
+                    <button id="leave">Leave</button>
+                    <select id="cameras"></select>
+                </div>
+                <div id="streams">
+                    <vedio id="myFace" autoplay playsinline width="400" height="400"></vedio>
+                </div>
+                <div class="chat">
+                    <ul id="chats" class="chats"></ul>
+                    <form id="chatForm">
+                        <input placeholder="Message" required type="text">
+                        <button>Send</button>
+                    </form>
+                    <form id="nickname">
+                        <input placeholder="nickname" required type="text">
+                        <button>set</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+<script src=/socket.io/socket.io.js"></script>
+<script src="/public/js/app.js"></script>
+</html>

@@ -54,7 +54,7 @@ app.use(session({
     cookie: { maxAge: 86400000 },
 }));
 
-app.use("/public", express.static(__dirname + "/public"));
+app.use("/public", express.static(path.join(__dirname, "/public")));
 app.use("/speech", express.static(__dirname + "/speech"));
 app.use('/images', express.static(__dirname + '/images'));
 app.use('/models', express.static(__dirname + '/models'));
@@ -93,6 +93,11 @@ const awsUpload = multer({
             cb(null, Math.floor(Math.random() * 1000).toString() + Date.now() + '.' + file.originalname.split('.').pop());
         }
     })
+})
+
+//사진 첨부
+app.post("/image", awsUpload.single("file"), (req, res) => {
+    res.send({data: req.file.location});
 })
 
 const FaceEvaluation = require('./model/faceEvaluation'); //표정평가 모델 클래스
@@ -272,9 +277,18 @@ app.get("/test2", (req, res) => res.sendFile(__dirname +'/views/test2.html'));
 
 app.get("/", (req, res) => res.sendFile(__dirname +'/views/index.html'));
 //추가
-app.get('/home', (req,res)=>{
-    res.render('home')
-})
+app.get('/home/:id', (req,res)=>{
+    pool.query("select nickname from customer where id = ?", req.params.id, function(err, results) {
+        if(err){
+            console.log(err);
+        } else{
+            res.render('face_chat', {
+                nickname: results[0].nickname
+            })
+        }
+    })
+
+});
 
 //아이디 중복 확인
 app.post('/id_check', (req, res) => {
