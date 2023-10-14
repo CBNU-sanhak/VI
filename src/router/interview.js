@@ -6,9 +6,9 @@ const interviewController = require('../controllers/interview');     //컨트롤
 
 const router = express.Router();
 
-router.get('/interview', interviewController.startInterview);
+router.get('/interview/:c_no', interviewController.startInterview);
 
-router.post('/submit', interviewController.submitInterview);
+router.post('/interview/submit', interviewController.submitInterview);
 
 router.get('/eyesresult', interviewController.eyesresult);
 

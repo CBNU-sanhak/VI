@@ -6,11 +6,11 @@ html(lang="en")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     script(defer, type="text/javascript", src="https://code.jquery.com/jquery-2.1.1.min.js")
     script(defer, type="text/javascript", src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js")
-    script(type="module", defer, src="public/js/face-api.min.js")
-    script(type="module", defer, src="public/js/facerecog.js")
-    script(type="module", src="public/js/annyang.js")
+    script(type="module", defer, src="../public/js/face-api.min.js")
+    script(type="module", defer, src="../public/js/facerecog.js")
+    script(type="module", src="../public/js/annyang.js")
     link(rel="shortcut icon", href="#")
-    link(rel="stylesheet", href="public/css/interview.css")
+    link(rel="stylesheet", href="../public/css/interview.css")
       
   body
     #message
@@ -32,3 +32,5 @@ if test !== null
   h1(style="display: none")= test
 if q_no !== null
   h2(style="display: none")= q_no
+if c_no !== null
+  h3(style="display: none")= c_no

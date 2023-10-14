@@ -14,12 +14,15 @@ const path = require('path');
 //         path: '/interview'
 //     }); // 변수를 템플릿에 전달
 // };
+
 exports.startInterview = (req, res, next) => {
+    const c_no = req.params.c_no;
     QuestionList.randomExtract()
     .then(([rows]) => {    //여기서 인자의 rows는 가져온 중첩 배열(메타데이터)에서 첫 번째 요소가 될 것이고, fieldData는 두 번쨰 요소
         res.render('interview', {
             test: rows[0].q_content,
             q_no: rows[0].q_no,
+            c_no: c_no,
             pageTitle: 'Shop',
             path: '/interview'
         });
@@ -54,7 +57,8 @@ exports.submitInterview = (req, res, next) => {
     fs.writeFileSync("left_eyes.txt", left_eyes);
     fs.writeFileSync("right_eyes.txt", right_eyes);
 
-    res.sendFile(path.join(__dirname, '../views/test2.html'));
+    res.redirect('http://localhost:3000/');
+    //res.sendFile(path.join(__dirname, '../views/test2.html'));
 };
 
 //아래 함수 렌더링 시 필요 데이터 가져오는 함수

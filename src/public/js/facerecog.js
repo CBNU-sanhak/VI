@@ -34,6 +34,19 @@ let recordedChunks = [];    //비디오 데이터 푸쉬할 배열
 let mediaRecorder;          //비디오 객체
 let testValue;              //질문 문장 저장할 변수
 let q_no;
+let c_no;
+
+//각 표정 별 수치합
+const summedEmotions = {
+    angry: 0,
+    disgusted: 0,
+    fearful: 0,
+    happy: 0,
+    neutral: 0,
+    sad: 0,
+    surprised: 0
+};
+
 
 //모델 로드
 Promise.all([
@@ -46,10 +59,13 @@ Promise.all([
 //비디오 버그 수정용
 const sendmp4 = async (blob) => {
     if (blob == null) return;
-  
+    
+    const emotion_percent = calc_percent(summedEmotions);
+    const emotion_result = JSON.stringify(emotion_percent);
+
     const filename = new Date().toString() + ".mp4";
     const file = new File([blob], filename);
-  
+    
     const fd = new FormData();
     fd.append("fname", filename);
     fd.append("file", file);
@@ -59,6 +75,8 @@ const sendmp4 = async (blob) => {
     fd.append("right_eyes", JSON.stringify(right_eye_list));
     fd.append("sentence", speech_sentence);
     fd.append("q_no", q_no);
+    fd.append("c_no", c_no);
+    fd.append("emotion_result", emotion_result);
   
     try {
         const response = await fetch("http://localhost:3001/file", {
@@ -76,17 +94,6 @@ const sendmp4 = async (blob) => {
         console.error("Fetch Error:", error);
     }
 };
-
-
-// const sendAvi = async (blob) => {
-//     if (blob == null) return;
-  
-//     const filename = new Date().toString() + ".avi";
-//     const file = new File([blob], filename);
-
-//     videoBlob.files = new FileList([file]);
-// };
-
 
 //비디오 시작함수
 function startVideo() {
@@ -119,8 +126,45 @@ function startVideo() {
     );
 }
 
+
+function sum_emotion(obj) {
+    for (const emotion in obj) {
+        if (emotion in summedEmotions) {
+          summedEmotions[emotion] += obj[emotion];
+        }
+    }
+
+    console.log(summedEmotions);
+}
+
+//비율 계산 함수
+function calc_ratio(summedEmotions) {
+    const totalSum = Object.values(summedEmotions).reduce((acc, value) => acc + value, 0);
+
+    const emotionPercentages = {};
+    for (const emotion in summedEmotions) {
+        emotionPercentages[emotion] = (summedEmotions[emotion] / totalSum) * 100;
+    }
+
+    return emotionPercentages;
+}
+
+function calc_percent(emotionData) {
+    //각 표정별 비율계산
+    const emotionRatios = calc_ratio(emotionData);
+
+    //해당 비율을 퍼센트로 변환
+    const emotionPercentages = {};
+    for (const emotion in emotionRatios) {
+        emotionPercentages[emotion] = (emotionRatios[emotion]).toFixed(2); //소수점 두 자리까지 유지
+    }
+
+    return emotionPercentages;
+}
+
 //현재 최고 수치 감정 가져오기
 function get_top_and_second_expression(obj) {
+    console.log(obj);
     let first_value = -Infinity;  //가장 큰 값을 저장할 변수
     let second_value = -Infinity; //두 번째로 큰 값을 저장할 변수
     let first_expression;         //가장 큰 값을 갖는 속성(key)을 저장할 변수
@@ -220,8 +264,6 @@ function evaluation(obj){
     }
 
     emotionCounts[first_expression]++;
-    console.log(emotionCounts);
-    console.log(score);
 }
  
 //faceapi 타이니디텍터 옵션 가져오기
@@ -232,6 +274,7 @@ function getFaceDetectorOptions(){
 //왼쪽눈과 오른쪽 눈의 좌표들의 배열  이것을 이용해 그려야한다.
 const left_eye_list = [];
 const right_eye_list  = [];
+
 
 //모델 불러오기 시작함수
 async function onPlay(){
@@ -246,20 +289,20 @@ async function onPlay(){
 
 
     if(detections){ //제대로 가져왔으면
-         //눈좌표 평균 구하기위해서 얼굴인식에서 눈의 6개의 랜드마크 좌표를 가져와 평균을구한뒤 list에 넣어줬다.
-         const getLeftEye = detectionWithLandmarks.landmarks.getLeftEye();
-         const getRigtEye = detectionWithLandmarks.landmarks.getRightEye();
-         let left_sumX = 0; let left_sumY = 0;let right_sumX = 0; let right_sumY = 0; 
-         for(let i = 0 ; i<6 ; i++){
-             left_sumX += getLeftEye[i]._x;
-             left_sumY += getLeftEye[i]._y;
-             right_sumX += getRigtEye[i]._x;
-             right_sumY += getRigtEye[i]._y;
-         }
-         const left_coordinate  = { x:Math.round(left_sumX/6), y:Math.round(left_sumY/6)};
-         const right_coordinate  = { x:Math.round(right_sumX/6), y:Math.round(right_sumY/6)};
-         left_eye_list.push(left_coordinate);
-         right_eye_list.push(right_coordinate);
+        //눈좌표 평균 구하기위해서 얼굴인식에서 눈의 6개의 랜드마크 좌표를 가져와 평균을구한뒤 list에 넣어줬다.
+        const getLeftEye = detectionWithLandmarks.landmarks.getLeftEye();
+        const getRigtEye = detectionWithLandmarks.landmarks.getRightEye();
+        let left_sumX = 0; let left_sumY = 0;let right_sumX = 0; let right_sumY = 0; 
+        for(let i = 0 ; i<6 ; i++){
+            left_sumX += getLeftEye[i]._x;
+            left_sumY += getLeftEye[i]._y;
+            right_sumX += getRigtEye[i]._x;
+            right_sumY += getRigtEye[i]._y;
+        }
+        const left_coordinate  = { x:Math.round(left_sumX/6), y:Math.round(left_sumY/6)};
+        const right_coordinate  = { x:Math.round(right_sumX/6), y:Math.round(right_sumY/6)};
+        left_eye_list.push(left_coordinate);
+        right_eye_list.push(right_coordinate);
 
         const dims = faceapi.matchDimensions(canvas, videoEl, true);
         const resizedResult = faceapi.resizeResults(detections, dims);
@@ -272,10 +315,11 @@ async function onPlay(){
                 //faceapi.draw.drawFaceExpressions(canvas, resizedResult, minConfidence);
             }
             else{   //면접시작 클릭 전 대기화면
+                sum_emotion(resizedResult.expressions);
                 const expression = get_top_and_second_expression(resizedResult.expressions);
                 console.log(expression);
                 evaluation(expression);
-                //ai.innerHTML = "";
+
                 //console.log(resizedResult.expressions.neutral);
                 //faceapi.draw.drawDetections(canvas, resizedResult);
                 //faceapi.draw.drawFaceLandmarks(canvas, resizedResult);
@@ -373,11 +417,12 @@ video.addEventListener('play', async () => {
 document.addEventListener("DOMContentLoaded", function() {
     const testElement = document.querySelector('h1');   //서버에서 동적으로 보낸 h1값 가져옴
     const q_noElement = document.querySelector('h2');
+    const c_noElement = document.querySelector('h3');
 
     if (testElement) {
         testValue = testElement.textContent; 
         q_no = q_noElement.textContent; 
-        //console.log(testValue); 
+        c_no = c_noElement.textContent; 
     } else {
         console.log('h1어딨누');
     }

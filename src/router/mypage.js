@@ -10,4 +10,8 @@ router.get('/mypage/:c_no', mypageController.getAllInterview);     //c_no 동적
 
 router.get('/mypage/video/:v_no', mypageController.getVideo);     //c_no 동적으로 보내기
 
+router.get('/getfaceresult/:v_no', mypageController.getFaceEvaluation);
+
+router.get('/mypage/result/:v_no', mypageController.getInterviewResult);
+
 module.exports = router;

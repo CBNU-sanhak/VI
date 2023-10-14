@@ -72,14 +72,14 @@ const DrawEyeResult = (left, right) => {
     }
   };
 
-  fetch("http://localhost:3001/getEyearray")
-  .then((response) => response.json())
-  .then((data) => {
-        console.log(data);
-        const left_eye_list = data.left;
-        const right_eye_list = data.right;
-        DrawEyeResult(left_eye_list,right_eye_list);
-    });
+fetch("http://localhost:3001/getEyearray")
+.then((response) => response.json())
+.then((data) => {
+      console.log(data);
+      const left_eye_list = data.left;
+      const right_eye_list = data.right;
+      DrawEyeResult(left_eye_list,right_eye_list);
+});
 
 
     

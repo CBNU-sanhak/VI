@@ -103,12 +103,17 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
     //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)
     try{
         const url = req.file.location;      //동영상 url
-        const c_no = 5;             //고객번호 (테스트용)
+        const c_no = req.body.c_no;            
         const q_no = req.body.q_no;
         const answer = req.body.sentence;
         const score = parseFloat(req.body.score);   //표정평가점수
         const left_eyes = JSON.stringify(req.body.left_eyes);
         const right_eyes = JSON.stringify(req.body.right_eyes);
+
+        //감정별 퍼센테이지
+        const emotion_result = req.body.emotion_result;
+        console.log(emotion_result);
+
         let v_no;
         let result = '산만함';  //테스트용
 
@@ -139,12 +144,13 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
         .catch(error => {
             console.error(error);
         });
-        // const faceevaluation = new FaceEvaluation(null, c_no, url, score);
-        // faceevaluation.save().then(() => {
-        //     console.log('save complete');
-        // }).catch(err => console.log(err));
-        // console.log(url);
-        //res.send({data: req.file.location});
+
+        //표정평가 DB저장
+        const faceevaluation = new FaceEvaluation(null, c_no, v_no, emotion_result);
+        await faceevaluation.save().then(() => {
+            console.log('표정평가 저장완료');
+        }).catch(err => console.log(err));
+
     }catch(err){console.log(err);}
 })
 // app.post("/file", (req, res) => {
@@ -390,8 +396,8 @@ app.get("/auth_check", (req, res) => {
         res.send({
             data: "true",
             nickname: req.session.nickname,
-            ident: req.session.ident,
-            id: req.session.ide
+            ident: req.session.ident,       //
+            id: req.session.ide             //pk
         })
     } else{
         res.send({
