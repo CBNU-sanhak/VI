@@ -237,7 +237,7 @@ app.get('/home/:id', (req,res)=>{
         if(err){
             console.log(err);
         } else{
-            res.render('home', {
+            res.render('face_chat', {
                 nickname: results[0].nickname
             })
         }
