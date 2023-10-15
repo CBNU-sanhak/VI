@@ -83,7 +83,7 @@ const sendmp4 = async (blob) => {
             method: "POST",
             body: fd,
         });
-        window.location.href = "http://localhost:3000/"; 
+        
         if (response.ok) {
             const data = await response.text();
             console.log(data);
@@ -491,7 +491,7 @@ stopBtn.addEventListener('click', async () => {
 
     //폼에 추가된 필드를 폼에 삽입
     form.appendChild(hiddenInput);
-
+    window.location.href = "http://localhost:3000/"; 
     //speech_sentence = "";
 });
 

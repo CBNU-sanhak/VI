@@ -103,6 +103,7 @@ app.post("/image", awsUpload.single("file"), (req, res) => {
 const FaceEvaluation = require('./model/faceEvaluation'); //표정평가 모델 클래스
 const Video = require('./model/video'); //비디오 모델 클래스
 const GazeEvaluation = require('./model/gazeEvaluation');
+const axios = require('axios');
 //파일 첨부
 app.post("/file", awsUpload.single("file"), async (req, res) => {
     //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)
@@ -159,7 +160,22 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
             console.log('표정평가 저장완료');
         }).catch(err => console.log(err));
        
-        res.redirect('http://localhost:3000/');
+        // const dataToSend = {
+        //     data: answer,
+        //     data2: v_no,
+        // };
+          
+        // axios.post('http://127.0.0.1:5000/api', dataToSend)
+        // .then(response => {
+        //     console.log('Flask 서버로부터 응답을 받았습니다:');
+        //     console.log(response.data);
+        //     // 이 곳에서 Flask 서버의 응답을 처리할 수 있습니다.
+        // })
+        // .catch(error => {
+        //     console.error('Flask 서버에 요청을 보내는 중 오류가 발생했습니다:');
+        //     console.error(error);
+        // });
+        //res.redirect('http://localhost:3000/');
     }catch(err){console.log(err);}
 })
 // app.post("/file", (req, res) => {
