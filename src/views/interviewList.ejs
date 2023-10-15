@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= pageTitle %></title>
-  </head>
-  <body>
-    <h1><%= pageTitle %></h1>
-    <ul>
-      <% results.forEach((video) => { %>
-        <li>
-          <a href="/mypage/video/<%= video.id %>">
-            <h2>S/N: <%= video.id %></h2>
-          </a>
-          <a href="/mypage/result/finalresult/<%= video.id %>">
-            <p>비디오 주소: <%= video.url %></p>
-          </a>
-        </li>
-      <% }); %>
-    </ul>
-  </body>
+<head>
+    <title>나의 면접영상</title>
+    <link rel="stylesheet" href="../public/css/interviewList.css">
+</head>
+<body>
+    <div class="container">
+        <h1>나의 면접영상</h1>
+        <div class="list-container">
+            <% for (let video of results) { %>
+                <div class="my-list-item">
+                    <div class="videoNum"><%= video.nickname %></div>
+                    <div class="videoDate"><%= video.v_date %></div>
+                    <div class="result">
+                        <a href="/mypage/video/<%= video.id %>">
+                            <button class="interviewButton">면접영상</button>
+                        </a>
+                        <a href="/mypage/result/finalresult/<%= video.id %>">
+                            <button class="interviewButton red">결과지</button>
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</body>
 </html>
