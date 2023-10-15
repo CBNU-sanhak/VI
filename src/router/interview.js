@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get('/interview/:c_no', interviewController.startInterview);
 
-router.post('/interview/submit', interviewController.submitInterview);
+router.post('/submit', interviewController.submitInterview);
 
 router.get('/eyesresult', interviewController.eyesresult);
 

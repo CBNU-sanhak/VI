@@ -87,6 +87,8 @@ const sendmp4 = async (blob) => {
         if (response.ok) {
             const data = await response.text();
             console.log(data);
+
+            window.location.href = "http://localhost:3000/"; 
         } else {
             console.error("HTTP Error:", response.status, response.statusText);
         }

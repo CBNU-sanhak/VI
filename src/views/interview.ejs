@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+    <script type="module" defer src="../public/js/face-api.min.js"></script>
+    <script type="module" defer src="../public/js/facerecog.js"></script>
+    <script type="module" src="../public/js/annyang.js"></script>
+    <link rel="shortcut icon" href="#">
+    <link rel="stylesheet" href="../public/css/interview.css">
+</head>
+<body>
+    <div id="message"></div>
+    <div id="message2"></div>
+    <div id="timer">60</div>
+    <video id="video" autoplay muted></video>
+    <canvas id="overlayCanvas"></canvas>
+    <button class="btn hover4" id="playBtn" type="button">면접시작</button>
+    <form id="myform" method="post" action="/submit">
+        <button class="btn hover4" id="stopBtn" style="display: none" type="button">면접제출</button>
+        <input style="display: none" type="text" id="sentence" name="sentence" value="대답 문장">
+        <input type="file" name="videoBlob" style="display: none">
+        <input type="hidden" name="left_eyes" value="value">
+        <input type="hidden" name="right_eyes" value="value">
+        <input type="hidden" name="score" value="value">
+    </form>
+
+    <% if (test !== null) { %>
+        <h1 style="display: none"><%= test %></h1>
+    <% } %>
+
+    <% if (q_no !== null) { %>
+        <h2 style="display: none"><%= q_no %></h2>
+    <% } %>
+
+    <% if (c_no !== null) { %>
+        <h3 style="display: none"><%= c_no %></h3>
+    <% } %>
+</body>
+</html>

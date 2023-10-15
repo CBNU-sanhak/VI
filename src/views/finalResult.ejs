@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <title>Document</title>
+    <style>
+        .centered-box {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 20vh; 
+        }
+
+        .result-box {
+            border: 2px solid #333;
+            padding: 20px;
+            background-color: #f0f0f0;
+            width: 30%; /* 화면 너비의 40% 사용 */
+            display: inline-block;
+            margin: 10px; 
+            border-radius: 15px;
+        }
+
+        .centered-box2 {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 20vh; /* 화면 높이의 20% 사용 */
+            margin-top : 50px; /* 지워야됨!!!!!!테스트용 */
+        }
+
+        .result-box2 {
+            border: 2px solid #333;
+            padding: 20px;
+            background-color: #f0f0f0;
+            width: 60%; /* 화면 너비의 40% 사용 */
+            display: inline-block;
+            margin: 10px; /* 상하좌우 여백 추가 */
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="centered-box">
+            <div class="result-box">
+                <h1>최종 분석 결과</h1>
+            </div>
+        </div>
+        <!-- 고객 정보 가져올거 -->
+        <div class="centered-box2">
+            <div class="result-box2">
+                <h1>면접 정보</h1>
+            </div>
+        </div>
+        <!-- 표정 분석 피드백 가져올거 -->
+        <div class="centered-box2">
+            <div class="result-box2">
+                <h1 id="facefeedback">표정 분석 결과</h1>
+                <a href="/mypage/result/faceresult/<%= v_no %>">
+                    <img src="/images/sns-icon1.png" alt="바로가기">
+                </a>
+            </div>
+        </div>
+        <div class="centered-box2">
+            <h1>시선 분석 결과</h1>
+            <div class="result-box2">
+                <h1 id="eyefeedback">시선 분석 결과</h1>
+                <a href="/mypage/result/eyeresult/<%= v_no %>">
+                    <img src="/images/sns-icon1.png" alt="바로가기">
+                </a>
+            </div>
+        </div>
+        <div class="centered-box2">
+            <div class="result-box2">
+                <h1>응답 분석 결과</h1>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // v_no 받아옴
+        const v_no = <%= v_no %>;
+
+        async function fetchResults() {
+            try {
+                //표정평가 피드백 내용
+                const response = await axios.get(`http://localhost:3001/getfaceresult/${v_no}`);
+                const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);
+                const data = response.data.result;
+
+                console.log(response2.data[0]['result']);
+                
+                const map_data = {};
+
+                const emotionMapping = {
+                    sad: '슬픔',
+                    angry: '짜증',
+                    happy: '행복',
+                    fearful: '불안',
+                    neutral: '차분함',
+                    disgusted: '불쾌함',
+                    surprised: '놀람'
+                };
+
+                for (const emotion in data) {
+                    const koreanLabel = emotionMapping[emotion];
+                    const value = data[emotion];
+                    map_data[koreanLabel] = value;
+                }
+                
+                let feedback = "";
+                if (map_data) {
+                    const facefeedback = document.getElementById('facefeedback');
+                    if (map_data.차분함 >= 60) {
+                        feedback += "사용자는 차분한 표정을 유지하고 있는 것으로 보입니다. 긴장하지 않고 매우 높은 집중력을 보이고 있습니다.";
+                    } else if (map_data.차분함 >= 40) {
+                        feedback += "사용자의 표정에서 높은 집중력이 보입니다. 이 수준을 유지하면 좋습니다.";
+                    } else if (map_data.차분함 >= 20) {
+                        if(map_data.행복 > 40) feedback += "긴장하지 않고 매우 높은 집중력을 보이고 있습니다. 이 수준을 유지하면 좋습니다.";
+                        else  feedback += "사용자의 표정에서 중간 정도의 집중력을 보입니다. 약간의 노력이 더 필요할 수 있습니다.";
+                    } else if (map_data.차분함 >= 10) {
+                        if(map_data.행복 > 40) feedback += "긴장하지 않고 매우 높은 집중력을 보이고 있습니다.  이 수준을 유지하면 좋습니다.";
+                        else  feedback += "사용자는 현재 차분한 표정을 유지하기 어렵워보입니다. 긴장을 풀고 면접 상황에 좀 더 집중해보세요.";     
+                    } else{
+                        if(map_data.행복 < 40) "사용자는 현재 차분한 표정을 유지하기 어렵워보입니다. 긴장을 풀고 면접 상황에 좀 더 집중해보세요.";
+                    }
+
+                    if (map_data.행복 >= 60) {
+                        feedback += " 사용자는 행복한 표정을 지니고 있어 긍정적인 인상을 줍니다. 아주 좋습니다";
+                    } else if (map_data.행복 >= 40) {
+                        feedback += " 사용자는 긍정적인 미소를 보이고 있습니다. 이는 면접관에게 좋은 인상을 줄 것입니다. 이 수준을 유지하면 좋습니다.";
+                    } else if (map_data.행복 >= 20) {
+                        feedback += " 긍정적인 모습이 미미해 보입니다, 조금 더 밝은 표정을 유지한다면 면접관에게 좋은 인상을 보일 수 있을 것입니다.";
+                    } else if (map_data.행복 >= 10) {
+                        feedback += " 긍정적인 모습이 부족해 보입니다. 밝은 표정을 많이 연습한다면 더 긍정적으로 인식될 수 있을 것입니다.";
+                    } else {
+                        feedback += " 긍정적인 모습이 부족해 보입니다. 미소를 더 많이 지어보세요.";
+                    }
+
+                    if (map_data.짜증 >= 60) {
+                        feedback += " 사용자에게 짜증스러운 표정이 높은 비율을 차지하고 있습니다. 이는 긍정적인 이미지에 도움이 되지 않습니다.";
+                    } else if (map_data.짜증 >= 40) {
+                        feedback += " 사용자에게 짜증을 나타내는 표정이 조금 높은 비율로 나타납니다. 이를 줄이려는 노력이 많이 필요해보입니다";
+                    } else if (map_data.짜증 >= 20) {
+                        feedback += " 사용자에게 짜증 표정이 미미하게 나타납니다, 타인에게 불쾌한 이미지를 피하려면 노력이 필요할 수 있습니다.";
+                    } else if (map_data.짜증 >= 10) {
+                        feedback += " 사용자에게 짜증 표정이 조금이나마 나타납니다, 이를 줄인다면 더 좋아 보입니다.";
+                    }
+
+                    facefeedback.textContent = feedback;
+                }
+
+                if(response2){
+                    const eyefeedback = document.getElementById('eyefeedback');
+                    eyefeedback.textContent = response2.data[0]['result']
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        window.addEventListener('load', fetchResults);
+    </script>
+</body>
+</html>

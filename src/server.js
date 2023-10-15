@@ -142,9 +142,11 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
         .then(result => {
             const coordinateData = result[0][0];
             const leftEyes = JSON.parse(coordinateData.left_eyes);
-            console.log(leftEyes);
-            GazeEvaluation.updateEvaluation('테스트', v_no).then(()=> {console.log('업데이트 완료')});
-            res.send(result); // 브라우저에 결과를 보내거나 다른 작업을 수행
+            //로직
+            let feedback = GazeEvaluation.evaluation(leftEyes);
+
+            //업데이트
+            GazeEvaluation.updateEvaluation(feedback, v_no).then(()=> {console.log('업데이트 완료')});
         })
         .catch(error => {
             console.error(error);
@@ -155,7 +157,8 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
         await faceevaluation.save().then(() => {
             console.log('표정평가 저장완료');
         }).catch(err => console.log(err));
-
+       
+        res.redirect('http://localhost:3000/');
     }catch(err){console.log(err);}
 })
 // app.post("/file", (req, res) => {

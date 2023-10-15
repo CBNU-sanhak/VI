@@ -124,10 +124,10 @@ exports.evaluation = (req, res, next) => {
             const leftEyes = JSON.parse(coordinateData.left_eyes);
 
             //로직
-            GazeEvaluation.evaluation(leftEyes);
+            let feedback = GazeEvaluation.evaluation(leftEyes);
 
             //업데이트
-            GazeEvaluation.updateEvaluation('테스트', v_no).then(()=> {console.log('업데이트 완료')});
+            GazeEvaluation.updateEvaluation(feedback, v_no).then(()=> {console.log('업데이트 완료')});
             res.send(result); // 브라우저에 결과를 보내거나 다른 작업을 수행
         })
         .catch(error => {
