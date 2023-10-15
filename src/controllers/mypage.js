@@ -103,3 +103,16 @@ exports.getEyeFeedback = async (req, res, next) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+//시선평가 좌표 가져오는 api함수
+exports.getCno = async (req, res, next) => {
+    const v_no = req.params.v_no;
+    try {
+        const result = await Video.search_cno(v_no);
+        const data = result[0][0].c_no;
+        res.send(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+};

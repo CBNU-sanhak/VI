@@ -145,6 +145,7 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
             //로직
             let feedback = GazeEvaluation.evaluation(leftEyes);
 
+            console.log(feedback);
             //업데이트
             GazeEvaluation.updateEvaluation(feedback, v_no).then(()=> {console.log('업데이트 완료')});
         })
