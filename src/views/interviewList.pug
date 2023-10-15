@@ -1,12 +1,16 @@
-html
-  head
-    title= pageTitle
-  body
-    h1= pageTitle
-    ul
+head
+  title 나의 면접영상
+  link(rel="stylesheet", href="../public/css/interviewList.css")
+body
+  div.container
+    h1 나의 면접영상
+    div.list-container
       each video in results
-        li
-          a(href=`/mypage/video/${video.id}`)  
-            h2 S/N: #{video.id}
-          a(href=`/mypage/result/${video.id}`)
-            p 비디오 주소: #{video.url}
+        div.my-list-item
+          div.videoNum 닉네임
+          div.videoDate=`${video.v_date}`
+          div.result
+            a(href=`/mypage/video/${video.id}`)  
+              button.interviewButton 면접영상
+            a(href=`/mypage/result/${video.id}`)
+              button.interviewButton.red 결과지
