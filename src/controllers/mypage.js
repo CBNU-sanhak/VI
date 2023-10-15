@@ -7,11 +7,10 @@ exports.getAllInterview = (req, res, next) => {
     const c_no = req.params.c_no;
     Video.search_cno_video(c_no)
     .then(([rows]) => {   
-        console.log(rows); 
         res.render('interviewList', {
             pageTitle: 'Mypage',
             path: '/mypage',
-            results: rows
+            results: rows,
         });
     })
     .catch(err => {
