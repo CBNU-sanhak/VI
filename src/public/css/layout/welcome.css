@@ -9,36 +9,71 @@ header h1{
     font-weight: 900;
 }
 
+a:link, a:visited {
+    background-color: #3b82f6;
+    color: white;
+    padding: 15px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 8px;
+}
+a:hover, a:active {
+    color: red;
+}
+
 #welcome .open{
     width: 100%;
-    max-width: 200px;
+    max-width: 400px;
     margin:auto;
     padding: 3rem 1rem;
     text-align: center;
+    /* background-color: #A9F5F2; */
 }
 
-#welcome .open h4{
+#welcome .menu{
     width: 100%;
-    max-width: 200px;
-    margin: 0 0 20px 0;
+    max-width: 400px;
+    margin:auto;
     padding: 3rem 1rem;
+    text-align: center;
+    /* background-color: #D8D8D8; */
+}
+
+#welcome .open > h4{
+    width: 100%;
+    max-width: 400px;
+    padding: 0 0 10px 0;
+    /* padding: 3rem 1rem; */
     text-align: start;
+    font-size: 30px;
+    color: white;
+    background-color: black;
 }
 
 #welcome .open ul.rooms{
     width: 100%;
-    max-width: 200px;
+    max-width: 400px;
+    overflow: auto;
+    height: 400px;
     margin: auto;
 }
 
 #welcome .open ul.rooms li{
     text-align: start;
-    margin-top: 10px;
+    padding: 5px 0 5px 0;
+    background: white;
+}
+
+#welcome .open ul.rooms li:nth-child(odd){
+    text-align: start;
+    padding: 5px 0 5px 0;
+    background: #BDBDBD;
 }
 
 #welcome .open ul.rooms li:hover{
     text-align: start;
-    margin-top: 10px;
+    padding: 5px 0 5px 0;
     color: red;
 }
 

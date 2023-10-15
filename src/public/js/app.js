@@ -312,7 +312,7 @@ socket.on("room_change", (rooms) => {
     rooms.forEach((room) => {
         const li = document.createElement("li");
         li.innerText = room[0] + " ("+ room[1]+"/4)";
-        roomList.append(li);
+        roomList.insertBefore(li, roomList.firstChild);
     });
 });
 socket.on("room_change2", () => {

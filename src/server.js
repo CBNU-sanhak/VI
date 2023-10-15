@@ -33,7 +33,7 @@ require("dotenv").config({path : path.join(__dirname, './env/.env')});
 
 const app = express();
 
-app.set("view engine", "pug");
+app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 
 const corsOptions = {
