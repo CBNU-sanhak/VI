@@ -308,6 +308,26 @@ async function onPlay(){
         const resizedResult = faceapi.resizeResults(detections, dims);
         const minConfidence = 0.05;     //주어진 수치 사용한다
         message2.innerHTML = "인식 성공";
+
+
+        //새로 만듦
+        const leftEyeX = getLeftEye.map(point => point._x);
+        const leftEyeY = getLeftEye.map(point => point._y);
+        const rightEyeX = getRigtEye.map(point => point._x);
+        const rightEyeY = getRigtEye.map(point => point._y);
+
+        const leftEyeCenter = {
+            x: Math.round(leftEyeX.reduce((acc, x) => acc + x) / leftEyeX.length),
+            y: Math.round(leftEyeY.reduce((acc, y) => acc + y) / leftEyeY.length)
+        };
+        
+        const rightEyeCenter = {
+            x: Math.round(rightEyeX.reduce((acc, x) => acc + x) / rightEyeX.length),
+            y: Math.round(rightEyeY.reduce((acc, y) => acc + y) / rightEyeY.length)
+        };
+
+        console.log('Left Eye Center:', leftEyeCenter);
+        console.log('Right Eye Center:', rightEyeCenter);
         try{    //트라이 성공
             if(state == 0){
                 //faceapi.draw.drawDetections(canvas, resizedResult);

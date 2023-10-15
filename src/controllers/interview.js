@@ -5,16 +5,6 @@ const GazeEvaluation = require('../model/gazeEvaluation');
 const fs = require('fs');
 const path = require('path');
 
-// //됐다 ㅅㅂ
-// exports.startInterview = (req, res, next) => {
-//     //res.sendFile(path.join(__dirname, '../views/interview2.html'));
-//     res.render('interview', {
-//         test: '안녕하세요 반가워요',
-//         pageTitle: 'Start Interview',
-//         path: '/interview'
-//     }); // 변수를 템플릿에 전달
-// };
-
 exports.startInterview = (req, res, next) => {
     const c_no = req.params.c_no;
     QuestionList.randomExtract()

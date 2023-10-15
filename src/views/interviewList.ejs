@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= pageTitle %></title>
+  </head>
+  <body>
+    <h1><%= pageTitle %></h1>
+    <ul>
+      <% results.forEach((video) => { %>
+        <li>
+          <a href="/mypage/video/<%= video.id %>">
+            <h2>S/N: <%= video.id %></h2>
+          </a>
+          <a href="/mypage/result/faceresult/<%= video.id %>">
+            <p>비디오 주소: <%= video.url %></p>
+          </a>
+        </li>
+      <% }); %>
+    </ul>
+  </body>
+</html>

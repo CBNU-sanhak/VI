@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Evaluation Results</title>
+    <style>
+        .centered-box {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30;
+        }
+
+        .box {
+            border: 2px solid #333;
+            padding: 20px;
+            background-color: #f0f0f0;
+            width: 300px;
+            display: inline-block; 
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #results-container{
+            margin-top:40px;
+            margin-bottom:40px;
+        }
+
+        #results-container ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+        }
+            
+        #results-container li {
+            flex: 1; /* 모든 항목의 너비를 동일하게 설정 */
+        }
+    </style>
+</head>
+<body>
+    <p></p>
+    <div class="centered-box">
+        <div class="box">
+            <h1>표정 분석 결과</h1>
+        </div>
+    </div>
+    <div class="new-box" style="width: 70%; background-color: #f0f0f0; text-align: center; border: 2px solid #333; padding: 20px; border-radius: 15px; margin: 50px auto; display: flex; flex-direction: column; justify-content: center; height: 60px;">
+        <div id="results-container">
+            <ul>
+            </ul>
+        </div>
+    </div>
+    
+
+    <canvas id="bar-chart" style="margin: 0 auto;" width="400" height="100"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // v_no 받아옴
+        const v_no = <%= v_no %>;
+
+        async function fetchFaceEvaluationResults() {
+            try {
+                const response = await axios.get(`http://localhost:3001/getfaceresult/${v_no}`);
+                const data = response.data.result;
+                
+                const map_data = {};
+
+                const emotionMapping = {
+                    sad: '슬픔',
+                    angry: '짜증',
+                    happy: '행복',
+                    fearful: '불안',
+                    neutral: '차분함',
+                    disgusted: '불쾌함',
+                    surprised: '놀람'
+                };
+
+                for (const emotion in data) {
+                    const koreanLabel = emotionMapping[emotion];
+                    const value = data[emotion];
+                    map_data[koreanLabel] = value;
+                }
+
+                //데이터 화면에 표시
+                if (map_data) {
+                    const resultsContainer = document.getElementById('results-container');
+                    let listItems = ''; 
+
+                    for (const [emotion, value] of Object.entries(map_data)) {
+                        listItems += `<li>${emotion}: ${value}%</li>`;      //각 항목을 누적
+                    }
+
+                    resultsContainer.innerHTML = `<ul>${listItems}</ul>`;   //한 번에 리스트 업데이트
+                }
+
+                //그래프 생성
+                if (map_data) {
+                    const ctx = document.getElementById('bar-chart').getContext('2d');
+                    const chartData = {
+                        labels: Object.keys(map_data),
+                        datasets: [{
+                            label: '표정 분석(%)',
+                            data: Object.values(map_data),
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    };
+
+                    const myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        window.addEventListener('load', fetchFaceEvaluationResults);
+    </script>
+</body>
+</html>
