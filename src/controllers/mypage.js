@@ -5,8 +5,9 @@ const GazeEvaluation = require('../model/gazeEvaluation');
 //모든 면접 결과 불러와 결과화면으로 렌더링
 exports.getAllInterview = (req, res, next) => {
     const c_no = req.params.c_no;
-    Video.fetchAll(c_no)
-    .then(([rows]) => {    
+    Video.search_cno_video(c_no)
+    .then(([rows]) => {   
+        console.log(rows); 
         res.render('interviewList', {
             pageTitle: 'Mypage',
             path: '/mypage',
