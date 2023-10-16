@@ -7,11 +7,10 @@ exports.getAllInterview = (req, res, next) => {
     const c_no = req.params.c_no;
     Video.search_cno_video(c_no)
     .then(([rows]) => {   
-        console.log(rows); 
         res.render('interviewList', {
             pageTitle: 'Mypage',
             path: '/mypage',
-            results: rows
+            results: rows,
         });
     })
     .catch(err => {
@@ -99,6 +98,19 @@ exports.getEyeFeedback = async (req, res, next) => {
     try {
         const result = await GazeEvaluation.get_result(v_no);
         res.send(result[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+//시선평가 좌표 가져오는 api함수
+exports.getCno = async (req, res, next) => {
+    const v_no = req.params.v_no;
+    try {
+        const result = await Video.search_cno(v_no);
+        const data = result[0][0].c_no;
+        res.send(data);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');

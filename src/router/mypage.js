@@ -22,4 +22,6 @@ router.get('/geteyeresult/:v_no', mypageController.getEyeEvaluation); //왼쪽 �
 
 router.get('/geteyeresult2/:v_no', mypageController.getEyeFeedback);    //시선좌표 피드백 내용 가져오기
 
+router.get('/getCno/:v_no', mypageController.getCno);
+
 module.exports = router;

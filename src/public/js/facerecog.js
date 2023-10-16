@@ -83,12 +83,9 @@ const sendmp4 = async (blob) => {
             method: "POST",
             body: fd,
         });
-        window.location.href = "http://localhost:3000/"; 
-        if (response.ok) {
-            const data = await response.text();
-            console.log(data);
-
-            //window.location.href = "http://localhost:3000/"; 
+        
+        if (response) {
+            window.location.href = "http://localhost:3000/"; 
         } else {
             console.error("HTTP Error:", response.status, response.statusText);
         }
@@ -482,16 +479,16 @@ stopBtn.addEventListener('click', async () => {
         mediaRecorder.stop();
     }
 
-    const emotionCountsJSON = JSON.stringify(emotionCounts);
+    // const emotionCountsJSON = JSON.stringify(emotionCounts);
 
-    const hiddenInput = document.createElement('input');
-    hiddenInput.type = 'hidden';
-    hiddenInput.name = 'emotionCounts';
-    hiddenInput.value = emotionCountsJSON;
+    // const hiddenInput = document.createElement('input');
+    // hiddenInput.type = 'hidden';
+    // hiddenInput.name = 'emotionCounts';
+    // hiddenInput.value = emotionCountsJSON;
 
-    //폼에 추가된 필드를 폼에 삽입
-    form.appendChild(hiddenInput);
-
+    // //폼에 추가된 필드를 폼에 삽입
+    // form.appendChild(hiddenInput);
+    window.location.href = "http://localhost:3000/"; 
     //speech_sentence = "";
 });
 
