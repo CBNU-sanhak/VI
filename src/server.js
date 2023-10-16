@@ -100,9 +100,10 @@ app.post("/image", awsUpload.single("file"), (req, res) => {
     res.send({data: req.file.location});
 })
 
-const FaceEvaluation = require('./model/faceEvaluation'); //표정평가 모델 클래스
 const Video = require('./model/video'); //비디오 모델 클래스
+const FaceEvaluation = require('./model/faceEvaluation'); //표정평가 모델 클래스
 const GazeEvaluation = require('./model/gazeEvaluation');
+const AnswerEvaluation = require('./model/answerEvaluation');
 const axios = require('axios');
 //파일 첨부
 app.post("/file", awsUpload.single("file"), async (req, res) => {
@@ -160,16 +161,21 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
             console.log('표정평가 저장완료');
         }).catch(err => console.log(err));
        
-        // const dataToSend = {
-        //     data: answer,
-        //     data2: v_no,
-        // };
-          
+        const dataToSend = {
+            data: answer,
+            data2: v_no,
+        };
+        
+
         // axios.post('http://127.0.0.1:5000/api', dataToSend)
         // .then(response => {
         //     console.log('Flask 서버로부터 응답을 받았습니다:');
-        //     console.log(response.data);
-        //     // 이 곳에서 Flask 서버의 응답을 처리할 수 있습니다.
+        //     console.log(response.data.message);
+        //     let score2 = response.data.message;
+        //     const answerevaluation = new AnswerEvaluation(null, v_no, answer, score2, 1);
+        //     answerevaluation.save().then(() => {
+        //         console.log('답변평가 저장완료');
+        //     }).catch(err => console.log(err));
         // })
         // .catch(error => {
         //     console.error('Flask 서버에 요청을 보내는 중 오류가 발생했습니다:');

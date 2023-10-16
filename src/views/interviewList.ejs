@@ -11,7 +11,7 @@
             <% for (let video of results) { %>
                 <div class="my-list-item">
                     <div class="videoNum"><%= video.nickname %></div>
-                    <div class="videoDate"><%= new Date(video.v_date).toISOString().split("T")[0] %></div>
+                    <div class="videoDate"><%= video.v_date %></div>
                     <div class="result">
                         <a href="/mypage/video/<%= video.id %>">
                             <button class="interviewButton">면접영상</button>

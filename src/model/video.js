@@ -6,7 +6,7 @@ module.exports = class Video {
     this.c_no = c_no;       //고객번호
     this.q_no = q_no;       //질문번호
     this.answer = answer;   //고객답변
-    this.v_date = new Date().toISOString().slice(0, 19).replace('T', ' '); //현재 날짜
+    this.v_date = new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
     this.url = url;         //동영상주소
   }
 
