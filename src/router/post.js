@@ -86,12 +86,12 @@ router.get("/", (req, res) => {
 })
 //제목 검색 API
 .post("/search", (req, res) => {
-    pool.query("insert into post set ?", req.body, function(err, result) {
+    pool.query("SELECT a.*, b.nickname FROM post as a join customer as b on a.writer = b.id where title like ?", "%"+req.body.title+"%", function(err, result) {
         if(err) {
             console.log(err);
             res.send({data: "err"})
         } else{
-            res.send({data: "ok"})
+            res.send(result)
         }
     })
 })
