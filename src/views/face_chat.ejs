@@ -18,32 +18,34 @@
 </head>
 
 <body>
-    <header>
-        <h1>스터디 그룹</h1>
-    </header>
-    <main>
-        <div id="welcome">
-            <form class="welcome-form"><input placeholder="Room Name" required="required" type="text" /><button>Enter room</button>
-                <!-- <div> <button>스터디 그룹 생성</button></div> -->
-            </form>
-            <div class="open">
-                <h4>Open Rooms</h4>
-                <ul class="rooms"></ul>
+    <div class="container">
+        <header>
+            <h1>스터디 그룹</h1>
+        </header>
+        <main>
+            <div id="welcome">
+                <form class="welcome-form"><input placeholder="Room Name" required="required" type="text" /><button>Enter room</button>
+                    <!-- <div> <button>스터디 그룹 생성</button></div> -->
+                </form>
+                <div class="open">
+                    <h4>Open Rooms</h4>
+                    <ul class="rooms"></ul>
+                </div>
+                <div class="menu">
+                    <a href="http://localhost:3000">나가기</a>
+                </div>
             </div>
-            <div class="menu">
-                <a href="http://localhost:3000">나가기</a>
-            </div>
-        </div>
-        <div class="call" id="call">
-            <div id="myStream">
-                <h3></h3>
-                <h4>nickname: <span id="nickname"><%=nickname%></span></h4>
-                <div class="control"><button id="mute">UnMute </button><button id="camera">Turn Camera Off </button><button id="leave">Leave</button><select id="cameras"></select></div>
-                <div id="streams"><video id="myFace" autoplay="autoplay" playsinline="playsinline" width="400" height="400"></video></div>
-                <div id="chat" class="chat">
-                    <ul class="chats" id="chats"> </ul>
-                    <form id="chatForm"><input placeholder="Message" required="required" type="text" /><button>Send</button></form>
-                    <!-- <form id="nickname"> <input placeholder="nickname" required="required" type="text" /><button>set</button></form> -->
+            <div class="call" id="call">
+                <div id="myStream">
+                    <h3></h3>
+                    <h4>nickname: <span id="nickname"><%=nickname%></span></h4>
+                    <div class="control"><button id="mute">UnMute </button><button id="camera">Turn Camera Off </button><button id="leave">Leave</button><select id="cameras"></select></div>
+                    <div id="streams"><video id="myFace" autoplay="autoplay" playsinline="playsinline" width="400" height="400"></video></div>
+                    <div id="chat" class="chat">
+                        <ul class="chats" id="chats"> </ul>
+                        <form id="chatForm"><input placeholder="Message" required="required" type="text" /><button>Send</button></form>
+                        <!-- <form id="nickname"> <input placeholder="nickname" required="required" type="text" /><button>set</button></form> -->
+                    </div>
                 </div>
             </div>
         </div>

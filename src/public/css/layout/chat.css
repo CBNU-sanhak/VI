@@ -21,6 +21,10 @@ video{
     padding: 1.5rem 0;
 }
 
+.chat form {
+    display: flex;
+}
+
 .chat form input{
     font-size: 1.2em;
     margin: 0;
