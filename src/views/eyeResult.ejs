@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Document</title>
+    <style>
+        .centered-box {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30;
+        }
+
+        .box {
+            border: 2px solid #333;
+            padding: 20px;
+            background-color: #f0f0f0;
+            width: 350px;
+            display: inline-block; 
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="centered-box">
+            <div class="box">
+                <h1>시선 움직임 분석 결과</h1>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: center; margin-top: 50px;">
+            <div style="display: inline-block; text-align: center;">
+                <h2>왼쪽 눈</h2>
+                <canvas id="myCanvas" width="500" height="500" style="border: 1px solid #000000;"></canvas>
+            </div>
+            <div style="display: inline-block; text-align: center;">
+                <h2>오른쪽 눈</h2>
+                <canvas id="myCanvas2" width="500" height="500" style="border: 1px solid #000000;"></canvas>
+            </div>
+        </div>
+        
+    </main>
+    <% if (v_no !== null) { %>
+        <h3 style="display: none"><%= v_no %></h1>
+    <% } %>
+
+    <script src="/public/js/eye.js"></script>
+    
+    <button onclick="goBack()">뒤로가기</button>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

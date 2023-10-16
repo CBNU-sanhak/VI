@@ -1,8 +1,18 @@
 button, .chat form button{
-    border: 1px solid #aeaeae;
-    border-radius: 8px;
-    background-color: #3b82f6;
-    font-size: 1rem;
-    color: #fff;
+    background-color: #A0D3F9; /* 추천 버튼의 배경색 */
+    color: #fff; /* 텍스트 색상 */
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 13px;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2691d9; /* 마우스 오버시 배경색 변경 */
+
+}
 }

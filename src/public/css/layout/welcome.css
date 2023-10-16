@@ -5,12 +5,12 @@ header{
 }
 
 header h1{
-    font-size: 3rem;
-    font-weight: 900;
+    font-size: 35px;
+    font-weight: bold;
 }
 
 a:link, a:visited {
-    background-color: #3b82f6;
+    background-color: #A0D3F9;
     color: white;
     padding: 15px 25px;
     text-align: center;
@@ -48,7 +48,7 @@ a:hover, a:active {
     text-align: start;
     font-size: 30px;
     color: white;
-    background-color: black;
+    background-color: #2691d9;
 }
 
 #welcome .open ul.rooms{
@@ -78,6 +78,9 @@ a:hover, a:active {
 }
 
 .welcome-form{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 2rem 0;
     text-align: center;
 }

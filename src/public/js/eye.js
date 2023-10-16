@@ -72,14 +72,23 @@ const DrawEyeResult = (left, right) => {
     }
   };
 
-fetch("http://localhost:3001/getEyearray")
-.then((response) => response.json())
-.then((data) => {
-      console.log(data);
-      const left_eye_list = data.left;
-      const right_eye_list = data.right;
-      DrawEyeResult(left_eye_list,right_eye_list);
+//페이지 로드되면 실행
+document.addEventListener("DOMContentLoaded", function() {
+  const testElement = document.querySelector('h3');   
+
+  if (testElement) {
+    testValue = testElement.textContent; 
+
+    fetch(`http://localhost:3001/geteyeresult/${testValue}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        const left_eye_list = data.left;
+        const right_eye_list = data.right;
+        DrawEyeResult(left_eye_list, right_eye_list);
+      })
+      .catch((error) => {
+        console.error('Error fetching eye data:', error);
+      });
+  }
 });
-
-
-    

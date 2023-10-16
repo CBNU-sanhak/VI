@@ -5,16 +5,6 @@ const GazeEvaluation = require('../model/gazeEvaluation');
 const fs = require('fs');
 const path = require('path');
 
-// //됐다 ㅅㅂ
-// exports.startInterview = (req, res, next) => {
-//     //res.sendFile(path.join(__dirname, '../views/interview2.html'));
-//     res.render('interview', {
-//         test: '안녕하세요 반가워요',
-//         pageTitle: 'Start Interview',
-//         path: '/interview'
-//     }); // 변수를 템플릿에 전달
-// };
-
 exports.startInterview = (req, res, next) => {
     const c_no = req.params.c_no;
     QuestionList.randomExtract()
@@ -134,10 +124,10 @@ exports.evaluation = (req, res, next) => {
             const leftEyes = JSON.parse(coordinateData.left_eyes);
 
             //로직
-            GazeEvaluation.evaluation(leftEyes);
+            let feedback = GazeEvaluation.evaluation(leftEyes);
 
             //업데이트
-            GazeEvaluation.updateEvaluation('테스트', v_no).then(()=> {console.log('업데이트 완료')});
+            GazeEvaluation.updateEvaluation(feedback, v_no).then(()=> {console.log('업데이트 완료')});
             res.send(result); // 브라우저에 결과를 보내거나 다른 작업을 수행
         })
         .catch(error => {

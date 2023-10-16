@@ -53,6 +53,7 @@
     line-height: 10vh;
 }
 #video{
+    margin-top :60px;
     z-index: 10;
     opacity: 10;
 }

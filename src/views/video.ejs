@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= pageTitle %></title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 40px;
+            margin-bottom: 40px;
+            font-size: 24px; 
+        }
+
+        video {
+            display: block;
+            margin: 0 auto; 
+        }
+    </style>
+</head>
+<body>
+    <h1>면접 영상 다시보기</h1>
+    <video width="1000" height="550" controls>
+        <source src="<%= results %>" type="video/mp4">
+    </video>
+</body>
+</html>
