@@ -24,11 +24,11 @@ exports.startInterview = (req, res, next) => {
 
 //면접 제출 함수
 exports.submitInterview = (req, res, next) => {
-    let sentence1 = req.body.sentence;
-    let left_eyes = (req.body.left_eyes);
-    let right_eyes = (req.body.right_eyes);
-    const obj ={sentence : sentence1};
-    let sentence = JSON.stringify(obj);
+    //let sentence1 = req.body.sentence;
+    //let left_eyes = (req.body.left_eyes);
+    //let right_eyes = (req.body.right_eyes);
+    //const obj ={sentence : sentence1};
+    //let sentence = JSON.stringify(obj);
     //console.log(sentence);
     //console.log(req.body.score);
     //console.log(req.body.emotionCounts);
@@ -43,9 +43,9 @@ exports.submitInterview = (req, res, next) => {
     // }).catch(err => console.log(err));
 
     //파일에 저장
-    fs.writeFileSync("test.txt", sentence);
-    fs.writeFileSync("left_eyes.txt", left_eyes);
-    fs.writeFileSync("right_eyes.txt", right_eyes);
+    //fs.writeFileSync("test.txt", sentence);
+    //fs.writeFileSync("left_eyes.txt", left_eyes);
+    //fs.writeFileSync("right_eyes.txt", right_eyes);
 
     res.redirect('http://localhost:3000/');
     //res.sendFile(path.join(__dirname, '../views/test2.html'));

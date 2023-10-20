@@ -35,7 +35,7 @@
               <span id="facefeedback">표정 분석 결과</span>
             </div>
             <div class="goDetail">
-              <a href="/mypage/result/faceresult/<%= v_no %>">
+              <a href="#" onclick="openPopup('/mypage/result/faceresult/<%= v_no %>');">
                 <i class="fa-solid fa-play"></i>
               </a>
             </div>
@@ -48,7 +48,7 @@
               <span id="eyefeedback">시선 분석 결과</span>
             </div>
             <div class="goDetail">
-              <a href="/mypage/result/eyeresult/<%= v_no %>">
+              <a href="#" onclick="openPopup('/mypage/result/eyeresult/<%= v_no %>');">
                 <i class="fa-solid fa-play"></i>
               </a>
             </div>
@@ -79,7 +79,9 @@
           try {
               //표정평가 피드백 내용
               const response = await axios.get(`http://localhost:3001/getfaceresult/${v_no}`);
-              const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);          
+              const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);
+              //const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);      
+                  
               const data = response.data.result;
 
               console.log(response2.data[0]['result']);
@@ -159,6 +161,11 @@
       }
 
       window.addEventListener('load', fetchResults);
+
+      //팝업창 함수
+      function openPopup(url) {
+        window.open(url, 'popupWindow', 'width=1300, height=800,scrollbars=yes');
+      }
     </script>
   </body>
 </html>

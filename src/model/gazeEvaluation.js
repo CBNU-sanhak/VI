@@ -29,7 +29,7 @@ module.exports = class GazeEvaluation {
     }
 
     static evaluation(coordinates){
-        const threshold = 20; 
+        const threshold = 10; 
         let count = 1;
         const init_coord = coordinates[0];
         let feedback = null;
@@ -64,7 +64,7 @@ module.exports = class GazeEvaluation {
         if (coordinates.length < 30){
             weight = 2;
         }
-
+        console.log(weight);
         //평가하기 (제일 안좋은 경우)
         if(count > 30/weight){
             feedback = '시선이 불안정하며 정확도가 낮습니다. 집중력 향상이 시급해보입니다. 또한 지속적으로 자세가 흐트러지고있는 것으로 관측됩니다. 다음 면접 시에는 이 부분을 고려하여 면접을 진행해주세요'

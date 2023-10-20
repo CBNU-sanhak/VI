@@ -24,4 +24,6 @@ router.get('/geteyeresult2/:v_no', mypageController.getEyeFeedback);    //시선
 
 router.get('/getCno/:v_no', mypageController.getCno);
 
+router.get('/finish_interview/:c_no', mypageController.finishInterview);
+
 module.exports = router;

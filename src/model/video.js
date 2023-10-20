@@ -36,6 +36,10 @@ module.exports = class Video {
     return db.execute('SELECT video.c_no FROM video WHERE id = ?', [v_no]);
   }
 
+  static get_last_result(c_no){
+    return db.execute('SELECT video.id FROM video WHERE c_no = (?) ORDER BY id DESC LIMIT 1;', [c_no])
+  }
+
   static search_video(v_no) {   //모든 정보 출력
     return db.execute('SELECT * FROM video WHERE id = ?', [v_no]);
   }

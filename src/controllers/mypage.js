@@ -34,13 +34,23 @@ exports.getVideo = (req, res, next) => {
     });
 };
 
-//표정평가 화면 불러오기
+//결과창 불러오기
 exports.getFinalResult = (req, res, next) => {
     const v_no = req.params.v_no;
     res.render('finalResult', {
         pageTitle: 'faceResult',
         v_no: v_no
     });
+};
+
+//면접 제출 후 결과창 이동 과정
+exports.finishInterview = (req, res, next) => {
+    const c_no = req.params.c_no;
+    Video.get_last_result(c_no).then((results) => {
+        const v_no = results[0][0].id;
+        console.log(v_no);
+        res.redirect('/mypage/result/finalresult/' + v_no);
+    }).catch(err => console.log(err));
 };
 
 
@@ -104,7 +114,6 @@ exports.getEyeFeedback = async (req, res, next) => {
     }
 };
 
-//시선평가 좌표 가져오는 api함수
 exports.getCno = async (req, res, next) => {
     const v_no = req.params.v_no;
     try {

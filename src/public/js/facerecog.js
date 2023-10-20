@@ -85,7 +85,7 @@ const sendmp4 = async (blob) => {
         });
         
         if (response) {
-            window.location.href = "http://localhost:3000/"; 
+            window.location.href = `http://localhost:3001/finish_interview/${c_no}`;
         } else {
             console.error("HTTP Error:", response.status, response.statusText);
         }
@@ -133,7 +133,7 @@ function sum_emotion(obj) {
         }
     }
 
-    console.log(summedEmotions);
+    ////console.log(summedEmotions);
 }
 
 //비율 계산 함수
@@ -163,7 +163,7 @@ function calc_percent(emotionData) {
 
 //현재 최고 수치 감정 가져오기
 function get_top_and_second_expression(obj) {
-    console.log(obj);
+    ////console.log(obj);
     let first_value = -Infinity;  //가장 큰 값을 저장할 변수
     let second_value = -Infinity; //두 번째로 큰 값을 저장할 변수
     let first_expression;         //가장 큰 값을 갖는 속성(key)을 저장할 변수
@@ -325,8 +325,8 @@ async function onPlay(){
             y: Math.round(rightEyeY.reduce((acc, y) => acc + y) / rightEyeY.length)
         };
 
-        console.log('Left Eye Center:', leftEyeCenter);
-        console.log('Right Eye Center:', rightEyeCenter);
+        ////console.log('Left Eye Center:', leftEyeCenter);
+        ////console.log('Right Eye Center:', rightEyeCenter);
         try{    //트라이 성공
             if(state == 0){
                 //faceapi.draw.drawDetections(canvas, resizedResult);
@@ -336,7 +336,7 @@ async function onPlay(){
             else{   //면접시작 클릭 전 대기화면
                 sum_emotion(resizedResult.expressions);
                 const expression = get_top_and_second_expression(resizedResult.expressions);
-                console.log(expression);
+                ////console.log(expression);
                 evaluation(expression);
 
                 //console.log(resizedResult.expressions.neutral);
@@ -488,9 +488,13 @@ stopBtn.addEventListener('click', async () => {
 
     // //폼에 추가된 필드를 폼에 삽입
     // form.appendChild(hiddenInput);
-    window.location.href = "http://localhost:3000/"; 
+    //window.location.href = "http://localhost:3000/"; 
     //speech_sentence = "";
+    // setTimeout(function() {
+    //     window.location.href = "http://localhost:3000/";
+    // }, 2000); 
 });
+
 
 //finish 이벤트
 document.addEventListener('finish', () => {
