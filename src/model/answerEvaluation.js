@@ -17,7 +17,11 @@ module.exports = class AnswerEvaluation {
 
   static get_face_evaluation_result(v_no) {
     return db.execute('SELECT f.result FROM face_evaluation as f WHERE f.v_no = (?)', [v_no]);
-}
+  }
+
+  static get_answer_evaluation_result(v_no){
+    return db.execute('SELECT a.m_score FROM answer_evaluation as a WHERE a.v_no = (?)', [v_no]);
+  }
 
   static deleteById(id) {
     

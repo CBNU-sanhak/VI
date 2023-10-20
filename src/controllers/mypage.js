@@ -1,6 +1,7 @@
 const Video = require('../model/video');    
 const FaceEvaluation = require('../model/faceEvaluation'); 
 const GazeEvaluation = require('../model/gazeEvaluation'); 
+const AnswerEvaluation = require('../model/answerEvaluation');
 
 //모든 면접 결과 불러와 결과화면으로 렌더링
 exports.getAllInterview = (req, res, next) => {
@@ -96,6 +97,19 @@ exports.getEyeEvaluation = async (req, res, next) => {
         const data = { left: leftEyes, right: rightEyes };
         
         res.send(data);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+//답변평가 결과 가져오는 api
+exports.getAnswerEvaluation = async (req, res, next) => {
+    const v_no = req.params.v_no;
+    
+    try {
+        const result =  await AnswerEvaluation.get_answer_evaluation_result(v_no);
+
+        res.send(result[0][0].m_score);
     } catch (error) {
         console.error(error);
     }

@@ -169,18 +169,21 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
         axios.post('http://127.0.0.1:5000/api', dataToSend)
         .then(response => {
             console.log('Flask 서버로부터 응답을 받았습니다:');
-            console.log(response.data.message);
-            let score2 = response.data.message;
-            const answerevaluation = new AnswerEvaluation(null, v_no, answer, score2, 1);
+            const answer_value = response.data.value;
+            const answer_result =  response.data.result;
+
+            const answerevaluation = new AnswerEvaluation(null, v_no, answer, answer_value, answer_result);
             answerevaluation.save().then(() => {
                 console.log('답변평가 저장완료');
             }).catch(err => console.log(err));
+            res.sendStatus(200);
         })
         .catch(error => {
             console.error('Flask 서버에 요청을 보내는 중 오류가 발생했습니다:');
             console.error(error);
         });
-        //res.render('http://localhost:3000/');
+        
+        
     }catch(err){console.log(err);}
 })
 // app.post("/file", (req, res) => {
