@@ -387,6 +387,7 @@ function speak(text, opt_prop) {
 
 //면접시간 카운트 함수
 let countdown;
+let timer_state = 1;
 
 function startCountdown(seconds) {
     //처음 화면에 보여줄 초 설정
@@ -406,7 +407,9 @@ function startCountdown(seconds) {
             return;
         }
 
-        displayTimeLeft(remainingSeconds); //남은 시간 표시
+        if(timer_state){
+            displayTimeLeft(remainingSeconds); //남은 시간 표시
+        }
     }, 1000); //1초마다 업데이트
 }
 
@@ -478,7 +481,10 @@ stopBtn.addEventListener('click', async () => {
     if (mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
     }
-
+    
+    timer_state = 0;
+    message.style.display = "none";
+    timerElement.textContent = "면접결과 분석중입니다.";
     // const emotionCountsJSON = JSON.stringify(emotionCounts);
 
     // const hiddenInput = document.createElement('input');
