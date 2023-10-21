@@ -608,7 +608,6 @@ wsServer.on("connection", (socket) => {
         })
     });
     socket.on("disconnecting", () => {
-        console.log(socket.room);
         let myRoomName = socket.room;
         socket.to(myRoomName).emit("leave_room", socket.id);
 
