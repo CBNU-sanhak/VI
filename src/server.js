@@ -508,6 +508,7 @@ function openRooms(){
         const name_count = [];
         name_count.push(roomObjArr[i].roomName);
         name_count.push(roomObjArr[i].currentNum);
+        name_count.push(roomObjArr[i].MAXIMUM);
         openrooms.push(name_count);
     }
     return openrooms;
@@ -516,35 +517,38 @@ function openRooms(){
 let roomObjArr = [
     // {
     //   roomName,
-    //   currentNum,
+    //   content,
+    //   currentNum
+    //   MAXIMUM
     //   users: [
     //     {
     //       socketId,
     //     },
     //   ],
+    //  nicknames: [
+    //      {
+    //      nickname,
+    //        },
+    //     ],
     // },
   ];
-  const MAXIMUM = 4;
+//   const MAXIMUM = 4;
 
 
 wsServer.on("connection", (socket) => {
-    let myRoomName = null;
-
-    socket["nickname"] = "Anon";
+    // let myRoomName = null;
+    socket.room = null;
+    socket.nickname = "anom";
+    
     socket.emit("room_change", openRooms());
     socket.on("join_room", (roomName) => {
-        myRoomName = roomName;
+        socket.room = roomName;
 
         let isRoomExist = false;
         let targetRoomObj = null;
         
         for(let i = 0; i<roomObjArr.length; ++i) {
             if (roomObjArr[i].roomName === roomName) {
-                if(roomObjArr[i].currentNum >= MAXIMUM) {
-                    socket.emit("reject_join");
-                    ++roomObjArr[i].currentNum;
-                    return;
-                }
 
                 isRoomExist = true;
                 targetRoomObj = roomObjArr[i];
@@ -552,19 +556,19 @@ wsServer.on("connection", (socket) => {
             }
         }
 
-        //방 만들기
+        //방이 없다면
         if (!isRoomExist) {
-            targetRoomObj = {
-                roomName,
-                currentNum: 0,
-                users: [],
-            };
-            roomObjArr.push(targetRoomObj);
+          socket.emit("error");
+          return;
         }
 
         targetRoomObj.users.push({
             socketId: socket.id,
         });
+        // targetRoomObj.nicknames.push({
+        //     nickname: socket.nickname,
+        // })
+        console.log("4번 " + socket.nickname);
         ++targetRoomObj.currentNum;
 
         socket.join(roomName);
@@ -581,12 +585,32 @@ wsServer.on("connection", (socket) => {
     socket.on("ice", (ice, remoteSocketId) => {
         socket.to(remoteSocketId).emit("ice", ice, socket.id);
     });
-    socket.on("new_message", (msg, room, done) => {
-        socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
+    socket.on("new_message", (msg, room, nickname, done) => {
+        socket.to(room).emit("new_message", `${nickname}: ${msg}`);
         done();
     });
-    socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
+    socket.on("nickname", (nickname, roomName) => {
+        socket.nickname = nickname;
+        let targetRoomObj = null;  
+        let isRoomExist = false;
+        for(let i = 0; i<roomObjArr.length; ++i) {
+            if (roomObjArr[i].roomName === roomName) {
+                isRoomExist = true;
+                targetRoomObj = roomObjArr[i];
+                break;
+            }
+        }
+            //방이 없다면
+             if (!isRoomExist) {
+                 socket.emit("error");
+                  return;
+             }
+                 targetRoomObj.nicknames.push({
+                 nickname: nickname,
+        })
+    });
     socket.on("disconnecting", () => {
+        let myRoomName = socket.room;
         socket.to(myRoomName).emit("leave_room", socket.id);
 
         let isRoomEmpty = false;
@@ -595,7 +619,11 @@ wsServer.on("connection", (socket) => {
             const newUsers = roomObjArr[i].users.filter(
                 (user) => user.socketId != socket.id
             );
+            const newNicknames = roomObjArr[i].nicknames.filter(
+                (nick) => nick.nickname != socket.nickname
+            );
             roomObjArr[i].users = newUsers;
+            roomObjArr[i].nicknames = newNicknames;
             --roomObjArr[i].currentNum;
 
                 if (roomObjArr[i].currentNum == 0) {
@@ -618,6 +646,70 @@ wsServer.on("connection", (socket) => {
         wsServer.sockets.emit("room_change", openRooms());
     }
     });
+    //10/19 추가
+    socket.on("show_room", (roomName) => {
+
+        let isRoomExist = false;
+        let targetRoomObj = null;
+        
+        for(let i = 0; i<roomObjArr.length; ++i) {
+            if (roomObjArr[i].roomName === roomName) {
+                isRoomExist = true;
+                targetRoomObj = roomObjArr[i];
+                break;
+            }
+        }
+        //방이 없을 시
+        if (!isRoomExist) {
+            socket.emit("no_room");
+            return;
+        };
+        socket.emit("show_room", targetRoomObj);
+    });
+    socket.on("room_create",(roomName, content, num) => {
+        if(roomName == ""){
+            socket.emit("not_allow");
+            return;
+        }
+        // myRoomName = roomName;
+        socket.room = roomName;
+
+        let isRoomExist = false;
+        let targetRoomObj = null;
+        
+        for(let i = 0; i<roomObjArr.length; ++i) {
+            if (roomObjArr[i].roomName === roomName) {
+                isRoomExist = true;
+                targetRoomObj = roomObjArr[i];
+                socket.emit("exist_room");
+                return;
+            }
+        } 
+        
+        //방 만들기
+         if (!isRoomExist) {
+            targetRoomObj = {
+                roomName,
+                content,
+                currentNum: 0,
+                MAXIMUM: num,
+                users: [],
+                nicknames: [],
+            };
+            roomObjArr.push(targetRoomObj);
+        }
+
+        targetRoomObj.users.push({
+            socketId: socket.id,
+        });
+        // targetRoomObj.nicknames.push({
+        //     nickname: socket.nickname,
+        // });
+        ++targetRoomObj.currentNum;
+        socket.join(roomName);
+        wsServer.sockets.emit("room_change", openRooms());
+        socket.emit("welcome", targetRoomObj.users);
+    })
 });
 
 //404에러 페이지

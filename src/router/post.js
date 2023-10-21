@@ -84,6 +84,17 @@ router.get("/", (req, res) => {
         }
     })
 })
+//제목 검색 API
+.post("/search", (req, res) => {
+    pool.query("SELECT a.*, b.nickname FROM post as a join customer as b on a.writer = b.id where title like ?", "%"+req.body.title+"%", function(err, result) {
+        if(err) {
+            console.log(err);
+            res.send({data: "err"})
+        } else{
+            res.send(result)
+        }
+    })
+})
 .patch("/update/:id", (req, res) => {
     pool.query("update post set ? where id = ?", [req.body, req.params.id], function(err, result) {
         if(err) {

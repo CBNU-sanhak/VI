@@ -1,0 +1,39 @@
+#create p, #result p{ 
+    margin-bottom: 5px;
+}
+
+#explain, #explain2 {
+    width: 100%;
+    height: 6.25em;
+    border: solid;
+    border-width: thin;
+    resize: none;
+    overflow: auto;
+    /* width: 500px;
+    height:200px; */
+}
+
+#g_name {
+    border: solid;
+    border-width: thin;
+    width: 100%
+}
+
+/* #explain2 {
+    border: solid;
+    border-width: thin;
+    overflow: auto;
+    width: 500px;
+    height:200px;
+} */
+
+.btn_outline {
+    text-align: center;
+    margin-top: 40px;
+}
+.btn_inline {
+    display :inline-block; 
+    width: 30%;
+    height: 40px;
+    padding: 5px;
+}

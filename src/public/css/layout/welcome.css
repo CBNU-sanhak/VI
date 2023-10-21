@@ -5,12 +5,12 @@ header{
 }
 
 header h1{
-    font-size: 3rem;
-    font-weight: 900;
+    font-size: 35px;
+    font-weight: bold;
 }
 
-a:link, a:visited {
-    background-color: #3b82f6;
+a, a:link, a:visited {
+    background-color: #A0D3F9;
     color: white;
     padding: 15px 25px;
     text-align: center;
@@ -19,15 +19,23 @@ a:link, a:visited {
     border-radius: 8px;
 }
 a:hover, a:active {
-    color: red;
+    background-color: #2691d9;
 }
 
+
 #welcome .open{
+    /* display: flex; */
+    /* align-items: center;
+    justify-content: center; */
     width: 100%;
-    max-width: 400px;
-    margin:auto;
-    padding: 3rem 1rem;
+    /* max-width: 400px; */
+    margin:2rem 0;
+    /* padding: 3rem 1rem; */
     text-align: center;
+    border-style: solid;
+    border-color: #aeaeae; 
+    border-width: 1px;/*상하좌우*/
+    border-radius: 10px;
     /* background-color: #A9F5F2; */
 }
 
@@ -42,18 +50,23 @@ a:hover, a:active {
 
 #welcome .open > h4{
     width: 100%;
-    max-width: 400px;
-    padding: 0 0 10px 0;
+    /* max-width: 400px; */
+    padding: 10px 0 10px 0;
     /* padding: 3rem 1rem; */
-    text-align: start;
+    text-align: center;
     font-size: 30px;
     color: white;
-    background-color: black;
+    background-color: #A0D3F9;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: solid;
+    border-width: 1px;/*상하좌우*/
+    border-color: #aeaeae; 
 }
 
 #welcome .open ul.rooms{
     width: 100%;
-    max-width: 400px;
+    /* max-width: 400px; */
     overflow: auto;
     height: 400px;
     margin: auto;
@@ -61,23 +74,31 @@ a:hover, a:active {
 
 #welcome .open ul.rooms li{
     text-align: start;
-    padding: 5px 0 5px 0;
+    padding: 10px 0 10px 10px;
     background: white;
+    /* border-top: solid; */
+    border-bottom: solid;
+    border-width: 1px;/*상하좌우*/
+    border-color: #aeaeae; 
+    font-size: 150%;
 }
 
-#welcome .open ul.rooms li:nth-child(odd){
+/* #welcome .open ul.rooms li:nth-child(odd){
     text-align: start;
     padding: 5px 0 5px 0;
     background: #BDBDBD;
-}
+} */
 
 #welcome .open ul.rooms li:hover{
     text-align: start;
-    padding: 5px 0 5px 0;
-    color: red;
+    padding: 10px 0 10px 10px;
+    background: #f5e7da;
 }
 
 .welcome-form{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 2rem 0;
     text-align: center;
 }
@@ -88,7 +109,7 @@ a:hover, a:active {
     font-size: 1.1rem;
 }
 .welcome-form input{
-    width: 250px;
+    width: 100%;
     border: 1px solid #aeaeae;
     border-radius: 8px 0 0 8px;
 }

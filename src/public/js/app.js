@@ -10,20 +10,137 @@ const call = document.getElementById("call");
 const msg = call.querySelector("ul");
 const msg_value = document.getElementById("a");
 const sendBtn = document.getElementById("b");
+const welcome = document.getElementById("welcome");
+const welcomeForm = welcome.querySelector("form");
+const list = welcome.querySelector("ul");
+
+//추가 10/19일
+const create = document.getElementById("create");
+const create_btn = document.getElementById("create_btn");
+const g_name = document.getElementById("g_name");
+const explain = document.getElementById("explain");
+const result = document.getElementById("result");
+const name2 = document.getElementById("name2");
+const explain2 = document.getElementById("explain2");
+const num2 = document.getElementById("num2");
+const j_nick = document.getElementById("j_nick");
+const join = document.getElementById("join");
+const cancel = document.getElementById("cancel");
+const creation = document.getElementById("creation");
+const nickname = document.getElementById("nickname");
+const room = document.getElementById("myStream");
+const chat = document.getElementById("chat");
+const cancel2 = document.getElementById("cancel2");
+const num = document.getElementsByName("num");
+const streams = document.querySelector("#streams");
+
+
+let roomName;
+let c_num;
+let max_num;
+
+socket.emit("nickname", nickname.innerText);
+
+async function handle_create(){
+    let title = g_name.value;
+    let content = explain.value;
+    let number;
+    num.forEach(elem => {
+        if(elem.checked){
+            number = elem.value;
+        }
+    });
+        // let nick = nickname.innerText;
+        const h3 = room.querySelector("h3");
+        h3.innerText = `ROOM: ${title}`;
+        roomName=title;
+        socket.emit("room_create", title, content, number);
+    }
+
+function cal_num(){
+    let re;
+    num.forEach(elem => {
+        if(elem.checked){
+            re = elem.value;
+        }
+    })
+}
+
+function handle_join(){
+    if(c_num >= max_num){
+        alert("남은자리가 없습니다.");
+    } else{
+        socket.emit("join_room", roomName);
+    }
+};
+
+function handle_cancel(){
+    welcome.hidden = false;
+    result.hidden = true;
+}
+
+function handle_creation(){
+    welcome.hidden = true;
+    create.hidden = false;
+    g_name.value = "";
+    explain.value = "";
+}
+
+function handle_cancel2(){
+    welcome.hidden = false;
+    create.hidden = true;
+}
+
+create_btn.addEventListener("click", handle_create);
+join.addEventListener("click", handle_join);
+cancel.addEventListener("click", handle_cancel);
+creation.addEventListener("click", handle_creation);
+cancel2.addEventListener("click", handle_cancel2);
+
+socket.on("no_room", () => {
+    alert("해당이름의 스터디그룹이 없습니다.");
+});
+
+socket.on("show_room", (targetRoomObj) => {
+    welcome.hidden = true;
+    result.hidden = false;
+    name2.innerText = targetRoomObj.roomName;
+    explain2.innerText = targetRoomObj.content;
+    c_num = targetRoomObj.currentNum;
+    max_num = targetRoomObj.MAXIMUM
+    num2.innerText = "(" + c_num + "/" + max_num + ")";
+    let text="";
+    targetRoomObj.nicknames.forEach(element => {
+        console.log(element.nickname);
+        text += element.nickname + ", ";
+    });
+    text = text.replace(/,\s*$/, '');
+    j_nick.innerText = text; 
+})
+
+socket.on("error", () => {
+    console.log("방이 없는 에러발생");
+})
+
+socket.on("exist_room", () => {
+    alert("이미 존재하는 스터디 그룹입니다.");
+    g_name.value = "";
+})
+
+socket.on("not_allow", () => {
+    alert("스터디그룹을 입력해주세요");
+})
+//기존
 
 let myStream;
 let muted = true;
 let cameraOff = false;
-let roomName;
 // let nickName = "Anon";
 
 let pcObj = {
     // remoteSocketId: pc
 };
 
-//실시간 채팅
-const room = document.getElementById("myStream");
-const chat = document.getElementById("chat");
 //메세지 생성 함수
 function addMessage(message, type){
     const ul = room.querySelector("ul");
@@ -47,7 +164,7 @@ function handleMessageSubmit(event){
     event.preventDefault();
     const input = room.querySelector("#chatForm input");
     const value = input.value;
-    socket.emit("new_message", value, roomName, () => {
+    socket.emit("new_message", value, roomName, nickname.innerText, () => {
         addMessage(`you: ${value}`, true);
     });
     input.value = "";
@@ -169,19 +286,18 @@ cameraSelect.addEventListener("input", handleCameraChange);
 
 
 // 채팅룸 입장 처리
-const welcome = document.getElementById("welcome");
-const welcomeForm = welcome.querySelector("form");
-const list = welcome.querySelector("ul");
+// const welcome = document.getElementById("welcome");
+// const welcomeForm = welcome.querySelector("form");
+// const list = welcome.querySelector("ul");
 
 call.hidden = true;
 
-const nickname = document.getElementById("nickname");
-
 async function initCall(){
     welcome.hidden = true;
+    create.hidden = true;
+    result.hidden = true;
     call.hidden = false;
-    console.log(nickname.innerText);
-    socket.emit("nickname", nickname.innerText);
+    socket.emit("nickname", nickname.innerText, roomName);
     await getMedia();
     // makeConnection(); 없앴음
 }
@@ -199,10 +315,10 @@ async function handleWelcomeSubmit(event){
     // await initCall();
     const h3 = room.querySelector("h3");
     h3.innerText = `ROOM: ${roomName}`;
-    // const h4 = room.querySelector("h4");
-    // h4.innerText = `NICKNAME: ${nickName}`;
     input.value="";
-    socket.emit("join_room", roomName);
+
+    socket.emit("show_room", roomName);
+    // socket.emit("join_room", roomName);
 }
 
 //채팅방 목록에 있는 채팅방 이름 클릭시
@@ -214,9 +330,9 @@ async function handleWelcomeSubmit2(event){
     // await initCall();
     const h3 = room.querySelector("h3");
     h3.innerText = `ROOM: ${roomName}`;
-    // const h4 = room.querySelector("h4");
-    // h4.innerText = `NICKNAME: ${nickName}`;
-    socket.emit("join_room", roomName);
+
+    socket.emit("show_room", roomName);
+    // socket.emit("join_room", roomName);
 }
 
 
@@ -311,7 +427,7 @@ socket.on("room_change", (rooms) => {
     }
     rooms.forEach((room) => {
         const li = document.createElement("li");
-        li.innerText = room[0] + " ("+ room[1]+"/4)";
+        li.innerText = room[0] + " ("+ room[1]+"/"+room[2]+")";
         roomList.insertBefore(li, roomList.firstChild);
     });
 });
@@ -342,7 +458,11 @@ socket.on("reject_join", () => {
 const leaveBtn = document.querySelector("#leave");
 
 function leaveRoom() {
-
+    const roomList = welcome.querySelector("ul");
+    while(roomList.hasChildNodes())
+    {
+        roomList.removeChild(roomList.firstChild);
+    }
 socket.disconnect();
  socket.connect();
   call.hidden = true;
@@ -358,13 +478,18 @@ socket.disconnect();
 }
 
 function removeVideo(leavedSocketId) {
-  const streams = document.querySelector("#streams");
-  const streamArr = streams.querySelectorAll("video");
+   const streamArr = streams.querySelectorAll("video");
   streamArr.forEach((streamElement) => {
     if (streamElement.id === leavedSocketId) {
       streams.removeChild(streamElement);
     }
   });
+  let count = streams.childElementCount;
+  if(count == 3){
+    streams.className="video_2";
+  } else if(count == 2){
+    streams.className="video_1";
+  }
 }
 
 function clearAllVideos() {
@@ -375,6 +500,7 @@ function clearAllVideos() {
       streams.removeChild(streamElement);
     }
   });
+  streams.className="video_1";
 }
 
 const chatBox = document.querySelector("#chats")
@@ -443,5 +569,11 @@ function paintPeerFace(peerStream, id){
     video.height = "400";
     video.srcObject = peerStream;
     streams.appendChild(video);
+    let count = streams.childElementCount;
+    if(count == 4){
+      streams.className="video_3";
+    } else if(count == 3){
+      streams.className="video_2";
+    }
 }
 
