@@ -3,9 +3,23 @@
     max-width: 1200px;
     margin: auto;
 }
-
-video{
+/* .video {
     width: 50%;
+    height: auto;
+} */
+
+.video_1 video{
+    width: 50%;
+    height: auto;
+}
+
+.video_2 video{
+    width: 33.3%;
+    height: auto;
+}
+
+.video_3 video{
+    width: 25%;
     height: auto;
 }
 

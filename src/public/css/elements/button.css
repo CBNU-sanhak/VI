@@ -12,7 +12,6 @@ button, .chat form button{
     transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #2691d9; /* 마우스 오버시 배경색 변경 */
-
+    background-color: #2691d9; 
 }
 }

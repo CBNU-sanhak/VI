@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/public/css/layout/chat.css" />
     <link rel="stylesheet" href="/public/css/elements/button.css" />
     <link rel="stylesheet" href="/public/css/elements/bubble.css" />
+    <link rel="stylesheet" href="/public/css//addition.css" />
     <link rel="shortcut icon" href="#" />
 </head>
 
@@ -24,15 +25,16 @@
         </header>
         <main>
             <div id="welcome">
-                <form class="welcome-form"><input placeholder="Room Name" required="required" type="text" /><button>Enter room</button>
+                <form class="welcome-form"><input placeholder="스터디 그룹" required type="text" /><button>검색</button>
                     <!-- <div> <button>스터디 그룹 생성</button></div> -->
                 </form>
                 <div class="open">
-                    <h4>Open Rooms</h4>
+                    <h4>스터디 그룹 목록</h4>
                     <ul class="rooms"></ul>
                 </div>
                 <div class="menu">
                     <a href="http://localhost:3000">나가기</a>
+                    <a id="creation">그룹 생성</a>
                 </div>
             </div>
             <div class="call" id="call">
@@ -40,7 +42,7 @@
                     <h3></h3>
                     <h4>nickname: <span id="nickname"><%=nickname%></span></h4>
                     <div class="control"><button id="mute">UnMute </button><button id="camera">Turn Camera Off </button><button id="leave">Leave</button><select id="cameras"></select></div>
-                    <div id="streams"><video id="myFace" autoplay="autoplay" playsinline="playsinline" width="400" height="400"></video></div>
+                    <div id="streams" class="video_1"><video id="myFace" class="video" autoplay="autoplay" playsinline="playsinline" width="400" height="400"></video></div>
                     <div id="chat" class="chat">
                         <ul class="chats" id="chats"> </ul>
                         <form id="chatForm"><input placeholder="Message" required="required" type="text" /><button>Send</button></form>
@@ -48,11 +50,45 @@
                     </div>
                 </div>
             </div>
+        
+        <div id="create" class="create" hidden>
+                <p>
+                   <label for="g_name">그룹 이름 : </label>
+                   <p><input type="text" id="g_name"></p>
+                </p>
+                <p>
+                   상세설명 :  
+                   <p><textarea type="text" id="explain"></textarea></p>
+                </p>
+                <p>
+                    <p>제한 인원:</p>
+                    <input type="radio" name="num" id="score1" value="2">
+                    <label for="score1">2명</label>
+                    <input type="radio" name="num" id="score2" value="3">
+                    <label for="score2">3명</label>
+                    <input type="radio" name="num" id="score3" value="4" checked>
+                    <label for="score3">4명</label>
+                </p>
+                <div class="btn_outline">
+                    <button id="create_btn" class="btn_inline">생성</button>
+                    <button id="cancel2" class="btn_inline">취소</button>
+                </div>
         </div>
-        <div id="create" class="create">
-            
+        <div id="result" hidden="true" >
+            <p>그룹 이름 : <span id="name2"></span>         </p>
+             <p>
+                상세설명 : 
+                <div id="explain2" ></div>
+             </p>
+             <p>현재 인원 : <span id="num2"></span></p>
+             <p>참여 인원 : <span id="j_nick"></span></p>
+             <div class="btn_outline">
+                <button id="join" class="btn_inline">참여하기</button>
+                <button id="cancel" class="btn_inline">취소</button>
+             </div>
         </div>
     </main>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/public/js/app.js"></script>
 </body>
