@@ -589,6 +589,10 @@ wsServer.on("connection", (socket) => {
         socket.to(room).emit("new_message", `${nickname}: ${msg}`);
         done();
     });
+    socket.on("file_message", (url, room, nickname, done) => {
+        socket.to(room).emit("file_message", url, nickname);
+        done();
+    });
     socket.on("nickname", (nickname, roomName) => {
         socket.nickname = nickname;
         let targetRoomObj = null;  
@@ -602,7 +606,7 @@ wsServer.on("connection", (socket) => {
         }
             //방이 없다면
              if (!isRoomExist) {
-                 socket.emit("error");
+                //  socket.emit("error");
                   return;
              }
                  targetRoomObj.nicknames.push({

@@ -51,6 +51,9 @@
     padding-left: 10px;
     background-color: #F6F6F6;
 }
+.chat form input[type="file"]{
+    width: 75%;
+}
 .chat form input[type="text"]:focus{
     outline: none;
 }

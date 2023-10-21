@@ -33,8 +33,8 @@
                     <ul class="rooms"></ul>
                 </div>
                 <div class="menu">
-                    <a href="http://localhost:3000">나가기</a>
                     <a id="creation">그룹 생성</a>
+                    <a href="http://localhost:3000">나가기</a>
                 </div>
             </div>
             <div class="call" id="call">
@@ -46,6 +46,10 @@
                     <div id="chat" class="chat">
                         <ul class="chats" id="chats"> </ul>
                         <form id="chatForm"><input placeholder="Message" required="required" type="text" /><button>Send</button></form>
+                        <form id="file_send" action="/image" method="POST" enctype="multipart/form-data">
+                            <input type="file" name="file" />
+                            <button type="submit">파일 전송</button>
+                        </form>
                         <!-- <form id="nickname"> <input placeholder="nickname" required="required" type="text" /><button>set</button></form> -->
                     </div>
                 </div>

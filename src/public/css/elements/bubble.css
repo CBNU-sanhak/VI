@@ -2,7 +2,7 @@ ul.chats li.me{
     position: relative;
     list-style-type: none;
     width: 90%;
-    height: 40px;
+    height: auto;
     margin: 0 5% 10px 5%;
     padding: 12px;
     border-radius: 8px;
@@ -13,7 +13,7 @@ ul.chats li.others{
     position: relative;
     list-style-type: none;
     width: 90%;
-    height: 40px;
+    height: auto;
     margin: 0 5% 10px 5%;
     padding: 12px;
     border-radius: 8px;
@@ -39,6 +39,51 @@ ul.chats li.others::after{
     height: 0;
     border-bottom: 16px solid transparent;
     border-right: 16px solid #3ad657;
+}
+
+ul.chats li.me_file{
+    position: relative;
+    list-style-type: none;
+    width: 90%;
+    height: auto;
+    margin: 0 5% 10px 5%;
+    border-radius: 8px;
+    background-color: #3b82f6;
+    color: #fff;
+}
+ul.chats li.others_file{
+    position: relative;
+    list-style-type: none;
+    width: 90%;
+    height: auto;
+    margin: 0 5% 10px 5%;
+    border-radius: 8px;
+    background-color: #3ad657;
+    color: #fff;
+}
+
+ul.chats li.me_file a{
+    display: block;
+    width: 100%;
+    background: #3b82f6;
+}
+
+ul.chats li.me_file a:hover{
+    display: block;
+    width: 100%;
+    background: #a0d3f9;
+}
+
+ul.chats li.others_file a{
+    display: block;
+    width: 100%;
+    background: #3ad657;
+}
+
+ul.chats li.others_file a:hover{
+    display: block;
+    width: 100%;
+    background: #A0FAA3;
 }
 
 @media screen and (max-width: 768px){

@@ -118,9 +118,9 @@ socket.on("show_room", (targetRoomObj) => {
     j_nick.innerText = text; 
 })
 
-socket.on("error", () => {
-    console.log("방이 없는 에러발생");
-})
+// socket.on("error", () => {
+//     console.log("방이 없는 에러발생");
+// })
 
 socket.on("exist_room", () => {
     alert("이미 존재하는 스터디 그룹입니다.");
@@ -576,4 +576,49 @@ function paintPeerFace(peerStream, id){
       streams.className="video_2";
     }
 }
+const file_send = document.getElementById("file_send");
 
+//10/21일 추가
+function add_file_Message(url, nickname, type){
+    const ul = room.querySelector("ul");
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+// true는 본인메세지 false는 다른사람 메세지
+    if(type){
+        li.className="me_file"
+        a.href = url;
+        a.innerText = "you: 파일을 전송했습니다.";
+        li.appendChild(a);
+        ul.appendChild(li);
+    } else{
+        li.className="others_file"
+        a.href = url;
+        a.innerText = `${nickname}: 파일을 전송했습니다.`;
+        li.appendChild(a);
+        ul.appendChild(li);
+    }
+    ul.scrollTo(0, ul.scrollHeight);
+    // ul.insertBefore(li, ul.firstChild);
+}
+
+file_send.addEventListener('submit', e => {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append("file", e.target.file.files[0]);
+    const options = {
+        method: 'POST',
+        body: formData,
+      };
+    fetch("/image", options).then((res) => res.json()).then((json) => {
+        let value = json.data;
+        socket.emit("file_message", value, roomName, nickname.innerText, () => {
+            add_file_Message(value,nickname.innerText, true);
+        });
+    });
+    file_send.querySelector("input").value = null;
+});
+
+socket.on("file_message", (url, nick) => {
+    add_file_Message(url, nick, false);
+})
