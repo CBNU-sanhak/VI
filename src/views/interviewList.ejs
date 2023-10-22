@@ -1,28 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>나의 면접영상</title>
-    <link rel="stylesheet" href="../public/css/interviewList.css">
-</head>
-<body>
-    <div class="container">
-        <h1>나의 면접영상</h1>
-        <div class="list-container">
-            <% for (let video of results) { %>
-                <div class="my-list-item">
-                    <div class="videoNum"><%= video.nickname %></div>
-                    <div class="videoDate"><%= video.v_date %></div>
-                    <div class="result">
-                        <a href="/mypage/video/<%= video.id %>">
-                            <button class="interviewButton">면접영상</button>
-                        </a>
-                        <a href="/mypage/result/finalresult/<%= video.id %>">
-                            <button class="interviewButton red">결과지</button>
-                        </a>
-                    </div>
-                </div>
-            <% } %>
-        </div>
+    <link rel="stylesheet" href="../public/css/interviewList.css" />
+  </head>
+  <body>
+    <div class="logo">
+      <a href="http://localhost:3000/">VI</a>
     </div>
-</body>
+    <div class="container">
+      <h1>나의 면접영상</h1>
+      <div class="list-container">
+        <% for (let video of results) { %>
+        <div class="my-list-item">
+          <div class="videoNum"><%= video.nickname %></div>
+          <div class="videoDate"><%= video.v_date %></div>
+          <div class="result">
+            <a href="/mypage/video/<%= video.id %>">
+              <button class="interviewButton">면접영상</button>
+            </a>
+            <a href="/mypage/result/finalresult/<%= video.id %>">
+              <button class="interviewButton red">결과지</button>
+            </a>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <div class="buttonBox">
+      <button onclick="history_back()">이전페이지</button>
+    </div>
+  </body>
+  <script>
+    function history_back() {
+      history.back();
+    }
+  </script>
 </html>

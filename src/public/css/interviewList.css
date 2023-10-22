@@ -1,6 +1,7 @@
 body {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     background-color: #f5e7da;
 }
 
@@ -95,3 +96,45 @@ body {
       }
   }
   
+
+  .logo {
+    width: 100%;
+    padding-left: 30px;
+    
+  }
+  
+  .logo a {
+    font-size: 30px;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  .logo img {
+  }
+  .buttonBox{
+    margin-top: 20px;
+    
+  }
+
+  .buttonBox button {
+    background-color: #A0D3F9;
+    width: 100px;
+    height: 30px;
+    color: #fff; /* 텍스트 색상 */
+    border: none;
+    border-radius: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 13px;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+
+    &:hover {
+        color: black; /* 마우스 오버시 배경색 변경 */
+        background-color: #2691d9;
+    }
+  }

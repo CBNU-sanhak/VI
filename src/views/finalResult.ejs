@@ -11,6 +11,9 @@
     ></script>
   </head>
   <body>
+    <div class="logo">
+      <a href="http://localhost:3000/">VI</a>
+    </div>
     <main class="container">
       <div class="header">
         <h1 class="title">최종 분석 결과</h1>
@@ -35,7 +38,10 @@
               <span id="facefeedback">표정 분석 결과</span>
             </div>
             <div class="goDetail">
-              <a href="#" onclick="openPopup('/mypage/result/faceresult/<%= v_no %>');">
+              <a
+                href="#"
+                onclick="openPopup('/mypage/result/faceresult/<%= v_no %>');"
+              >
                 <i class="fa-solid fa-play"></i>
               </a>
             </div>
@@ -48,7 +54,10 @@
               <span id="eyefeedback">시선 분석 결과</span>
             </div>
             <div class="goDetail">
-              <a href="#" onclick="openPopup('/mypage/result/eyeresult/<%= v_no %>');">
+              <a
+                href="#"
+                onclick="openPopup('/mypage/result/eyeresult/<%= v_no %>');"
+              >
                 <i class="fa-solid fa-play"></i>
               </a>
             </div>
@@ -69,6 +78,14 @@
         </div>
       </div>
     </main>
+    <div class="buttonBox">
+      <button onclick="history_back()">이전페이지</button>
+    </div>
+    <script>
+      function history_back() {
+        history.back();
+      }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
       // v_no 받아옴
@@ -80,8 +97,8 @@
               const response = await axios.get(`http://localhost:3001/getfaceresult/${v_no}`);
               const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);
               const response3 = await axios.get(`http://localhost:3001/getanswerresult/${v_no}`);
-              //const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);      
-                  
+              //const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);
+
               const data = response.data.result;
 
               console.log(response2.data[0]['result']);
@@ -123,7 +140,7 @@
 
                   if (feedback !== "") {
                     feedback += "\n" + "추가로 ";
-                  } 
+                  }
 
                   if (map_data.행복 >= 60) {
                       feedback += "사용자는 행복한 표정을 지니고 있어 긍정적인 인상을 줍니다. 아주 좋습니다";
