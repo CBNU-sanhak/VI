@@ -73,6 +73,23 @@ exports.getEyeResult = (req, res, next) => {
     });
 };
 
+//시선평가 화면 불러오기
+exports.getAnswerResult = (req, res, next) => {
+    const v_no = req.params.v_no;
+    AnswerEvaluation.get_answer_evaluation_result(v_no)
+    .then((results) => {    
+        res.render('answerResult', {
+            pageTitle: 'Video',
+            path: '/mypage',
+            v_no: v_no,
+            term: results[0][0].term
+        });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
 //표정평가 수치 가져오는 api함수
 exports.getFaceEvaluation = (req, res, next) => {
     const v_no = req.params.v_no;
@@ -104,12 +121,41 @@ exports.getEyeEvaluation = async (req, res, next) => {
 
 //답변평가 결과 가져오는 api
 exports.getAnswerEvaluation = async (req, res, next) => {
-    const v_no = req.params.v_no;
-    
+    const v_no = req.params.v_no;    
     try {
         const result =  await AnswerEvaluation.get_answer_evaluation_result(v_no);
 
-        res.send(result[0][0].m_score);
+        const data = {
+            result: result[0][0].result,
+            result2: result[0][0].result2,
+            value: result[0][0].value,
+            value2: result[0][0].value2,
+            term: result[0][0].term
+        }
+        res.send(data);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+//비디오디비에서 응답 내용과 질문디비에서 질문 내용 가져오는 api
+exports.getAnswerContent = async (req, res, next) => {
+    const v_no = req.params.v_no;
+    
+    try {
+        const result =  await Video.get_result_all(v_no);
+        res.send(result[0][0]);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
+exports.getCorrectAnswer = async (req, res, next) => {
+    const q_no = req.params.q_no;
+    try {
+        const result =  await Video.get_correct_asnwer(q_no);
+        res.send(result[0][0]);
     } catch (error) {
         console.error(error);
     }

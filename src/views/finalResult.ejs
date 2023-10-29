@@ -70,7 +70,10 @@
               <span id="answerfeedback">표정 분석 결과</span>
             </div>
             <div class="goDetail">
-              <a href="/mypage/result/faceresult/<%= v_no %>">
+              <a
+                href="/mypage/result/answerresult/<%= v_no %>"
+                
+              >
                 <i class="fa-solid fa-play"></i>
               </a>
             </div>
@@ -102,6 +105,7 @@
               const data = response.data.result;
 
               console.log(response2.data[0]['result']);
+              console.log(response3);
 
               const map_data = {};
 
@@ -165,16 +169,28 @@
                   }
 
                   feedback = feedback.replace(/\n/g, "<br>");
+                  feedback += ' 자세한 내용을 확인하시려면 오른쪽을 클릭하세요.';
                   facefeedback.innerHTML = feedback;
               }
 
+              //시선평가 피드백내용 가져옴
               if(response2){
                   const eyefeedback = document.getElementById('eyefeedback');
-                  eyefeedback.textContent = response2.data[0]['result'];
+                  eyefeedback.textContent = response2.data[0]['result'] + '. \n\n자세한 내용을 확인하시려면 오른쪽을 클릭하세요.';
               }
+
+              //응답평가 피드백내용 추가
               if(response3){
                 const answerfeedback = document.getElementById('answerfeedback');
-                answerfeedback.textContent = response3.data;
+                if(response3.data.result == '합격'){
+                  answerfeedback.textContent = '사용자께서는 주어진 질문에 매우 적절하게 응답하신 것으로 판단됩니다. 자세한 내용은 오른쪽을 클릭하세요.';
+                }
+                else if(response3.data.result == '불합격' && response3.data.result2 == '합격'){
+                  answerfeedback.textContent = '주어진 질문에 응답하신 내용은 적절한 응답으로 판단됩니다. 자세한 내용은 오른쪽을 클릭하세요.';
+                }
+                else{
+                  answerfeedback.textContent = '주어진 질문에 응답하신 내용은 부적합한 응답으로 판단됩니다. 자세한 내용은 오른쪽을 클릭하세요.';
+                }
               }
           } catch (error) {
               console.error('Error fetching data:', error);

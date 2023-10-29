@@ -171,8 +171,11 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
             console.log('Flask 서버로부터 응답을 받았습니다:');
             const answer_value = response.data.value;
             const answer_result =  response.data.result;
+            const answer_value2 = response.data.value2;
+            const answer_result2 =  response.data.result2;
+            const term = JSON.stringify(response.data.term);
 
-            const answerevaluation = new AnswerEvaluation(null, v_no, answer, answer_value, answer_result);
+            const answerevaluation = new AnswerEvaluation(null, v_no, answer, answer_value, answer_result, answer_value2, answer_result2, term);
             answerevaluation.save().then(() => {
                 console.log('답변평가 저장완료');
             }).catch(err => console.log(err));
