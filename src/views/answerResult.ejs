@@ -1,132 +1,195 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Face Evaluation Results</title>
     <style>
-        .centered-box {
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 30;
-        }
+      .centered-box {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 30;
+      }
 
-        .box {
-            border: 2px solid #333;
-            padding: 20px;
-            background-color: #f0f0f0;
-            width: 300px;
-            display: inline-block; 
-            border-radius: 15px;
-        }
+      .box {
+        border: 2px solid #333;
+        padding: 20px;
+        background-color: #f0f0f0;
+        width: 300px;
+        display: inline-block;
+        border-radius: 15px;
+      }
 
-        h1 {
-            color: #333;
-        }     
+      h1 {
+        color: #333;
+      }
 
-        .results-container ul {
-            display: flex;
-            list-style: none;
-            padding: 0;
-        }
-            
-        .results-container #q_content {
-            flex: 1; /* 모든 항목의 너비를 동일하게 설정 */
-            font-family: Georgia, "맑은 고딕", serif; 
-            font-size: 22px;
-        }
+      .results-container ul {
+        display: flex;
+        list-style: none;
+        padding: 0;
+      }
 
-        .results-container #answer {
-            flex: 1; /* 모든 항목의 너비를 동일하게 설정 */
-            font-family: Georgia, "맑은 고딕", serif; 
-            font-size: 20px;
-        }
+      .results-container #q_content {
+        flex: 1; /* 모든 항목의 너비를 동일하게 설정 */
+        font-family: Georgia, "맑은 고딕", serif;
+        font-size: 22px;
+      }
 
+      .results-container #answer {
+        flex: 1; /* 모든 항목의 너비를 동일하게 설정 */
+        font-family: Georgia, "맑은 고딕", serif;
+        font-size: 20px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <p></p>
     <div class="centered-box">
-        <div class="box">
-            <h1>응답 분석 결과</h1>
-        </div>
+      <div class="box">
+        <h1>응답 분석 결과</h1>
+      </div>
     </div>
-    
-    <div class="new-box" style="width: 70%; background-color: #f0f0f0; text-align: center; border: 2px solid #333; padding: 20px; border-radius: 15px; margin: 100px auto; display: flex; flex-direction: column; justify-content: center; height: 60px;">
-        <div class="results-container">
-            <ul> 
-                <li id = "q_content">질문 내용 : </li> 
-            </ul>
-        </div>
+
+    <div
+      class="new-box"
+      style="
+        width: 70%;
+        background-color: #f0f0f0;
+        border: 2px solid #333;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 50px auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 60px;
+      "
+    >
+      <span style="font-size: 20px">질문 내용</span>
+      <div class="results-container">
+        <ul>
+          <li id="q_content"></li>
+        </ul>
+      </div>
     </div>
-    <div class="new-box" style="width: 70%; background-color: #f0f0f0;  border: 2px solid #333; padding: 20px; border-radius: 15px; margin: 60px auto; display: flex; flex-direction: column; justify-content: center; height: 60px;">
-        <div class="results-container">
-            <ul> 
-                <li id = "answer">응답 내용 : </li> 
-            </ul>
-        </div>
+    <div
+      class="new-box"
+      style="
+        width: 70%;
+        background-color: #f0f0f0;
+        border: 2px solid #333;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 50px auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100px;
+      "
+    >
+      <span style="font-size: 20px">응답 내용</span>
+      <div class="results-container" style="overflow-y: scroll">
+        <ul>
+          <li id="answer"></li>
+        </ul>
+      </div>
     </div>
-    <div class="new-box" style="width: 70%; background-color: #f0f0f0; text-align: center; border: 2px solid #333; padding: 20px; border-radius: 15px; margin: 100px auto; display: flex; flex-direction: column; justify-content: center; height: 60px;">
-        <div class="results-container">
-            <ul> 
-                <li id = "keyword">검출되지 않은 주요 키워드 :  </li> 
-                <!-- 이거 걍 테스트용 안쓸듯 -->
-                <% term.forEach(function(keyword, index) { %>
-                    <li><%= keyword %><%= index < term.length - 1 ? ',  ' : '' %></li>
-                <% }); %>
-            </ul>
-        </div>
+    <div
+      class="new-box"
+      style="
+        width: 70%;
+        background-color: #f0f0f0;
+        border: 2px solid #333;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 50px auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 60px;
+      "
+    >
+      <span style="font-size: 20px">검출되지 않은 주요 키워드</span>
+      <div class="results-container">
+        <ul>
+          <li id="keyword"></li>
+          <!-- 이거 걍 테스트용 안쓸듯 -->
+          <% term.forEach(function(keyword, index) { %>
+          <li><%= keyword %><%= index < term.length - 1 ? ', ' : '' %></li>
+          <% }); %>
+        </ul>
+      </div>
     </div>
-    <div class="new-box" style="width: 70%; background-color: #f0f0f0;  border: 2px solid #333; padding: 20px; border-radius: 15px; margin: 60px auto; display: flex; flex-direction: column; justify-content: center; height: 60px;">
-        <div class="results-container">
-            <ul> 
-                <li id = "correct_answer">모범 답안 :  </li><br>
-            </ul>
-            <ul>    
-                <li id = "cos">코사인 유사도 값 :  </li> 
-            </ul>
-        </div>
+    <div
+      class="new-box"
+      style="
+        width: 70%;
+        background-color: #f0f0f0;
+        border: 2px solid #333;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 50px auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100px;
+      "
+    >
+      <span style="font-size: 20px">모범 답안</span>
+      <div
+        class="results-container"
+        style="overflow-y: scroll; min-height: 100px"
+      >
+        <ul>
+          <li id="correct_answer"></li>
+          <br />
+        </ul>
+        <ul>
+          <li id="cos">코사인 유사도 값 :</li>
+        </ul>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        // v_no 받아옴
-        const v_no = <%= v_no %>;
+      // v_no 받아옴
+      const v_no = <%= v_no %>;
 
-        async function fetchAnswerEvaluationResults() {
-            try {
-                const response = await axios.get(`http://localhost:3001/getanswerresult2/${v_no}`);
-                const response2 = await axios.get(`http://localhost:3001/getanswerresult/${v_no}`);
-                
-                const q_no = response.data.q_no;
-                const q_content = response.data.q_content;
-                const answer = response.data.answer;
-                
-                const response3 = await axios.get(`http://localhost:3001/mypage/getcorrectanswer/${q_no}`);
+      async function fetchAnswerEvaluationResults() {
+          try {
+              const response = await axios.get(`http://localhost:3001/getanswerresult2/${v_no}`);
+              const response2 = await axios.get(`http://localhost:3001/getanswerresult/${v_no}`);
 
-                const question_content = document.getElementById('q_content');
-                const user_answer = document.getElementById('answer');
-                const correct_answer = document.getElementById('correct_answer');
-                const cos = document.getElementById('cos');
+              const q_no = response.data.q_no;
+              const q_content = response.data.q_content;
+              const answer = response.data.answer;
 
-                question_content.textContent = "질문 내용 : " + q_content;
-                user_answer.textContent = "응답 내용 : " + answer;
-                correct_answer.textContent = "모범 답안 : " + response3.data.optimal;
-                cos.textContent = "코사인 유사도 값 : " + response2.data.value.toFixed(4) + " (유사도 값이 1에 가까울 수록 좋습니다)";
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
+              const response3 = await axios.get(`http://localhost:3001/mypage/getcorrectanswer/${q_no}`);
 
-        window.addEventListener('load', fetchAnswerEvaluationResults);
+              const question_content = document.getElementById('q_content');
+              const user_answer = document.getElementById('answer');
+              const correct_answer = document.getElementById('correct_answer');
+              const cos = document.getElementById('cos');
+
+              question_content.textContent = "질문 내용 : " + q_content;
+              user_answer.textContent = answer;
+              correct_answer.textContent =  response3.data.optimal;
+              cos.textContent = "코사인 유사도 값 : " + response2.data.value.toFixed(4) + " (유사도 값이 1에 가까울 수록 좋습니다)";
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+      }
+
+      window.addEventListener('load', fetchAnswerEvaluationResults);
     </script>
     <button onclick="goBack()">뒤로가기</button>
     <script>
-        function goBack() {
-            window.history.back();
-        }
+      function goBack() {
+        window.history.back();
+      }
     </script>
-</body>
+  </body>
 </html>
