@@ -34,4 +34,6 @@ router.get('/getCno/:v_no', mypageController.getCno);
 
 router.get('/finish_interview/:c_no', mypageController.finishInterview);
 
+router.get('/result/getVideo2/:v_no', mypageController.getVideo2);         //면접영상 정보 가져오기
+
 module.exports = router;

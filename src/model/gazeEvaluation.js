@@ -10,7 +10,7 @@ module.exports = class GazeEvaluation {
         this.right_eyes = right_eyes;
     }
 
-    save() {    //sn은 자동증가로 설정해놨음
+    save() {    
         return db.execute('INSERT INTO gaze_evaluation (c_no, v_no, result, left_eyes, right_eyes) VALUES (?, ?, ?, ? ,?)', 
             [this.c_no, this.v_no, this.result, this.left_eyes, this.right_eyes]   
         );
@@ -91,6 +91,6 @@ module.exports = class GazeEvaluation {
     }
 
     static fetchAll() {   //모든 정보 출력
-    return db.execute('SELECT * FROM gaze_evaluation');
+        return db.execute('SELECT * FROM gaze_evaluation');
     }
 };

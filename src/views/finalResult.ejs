@@ -19,8 +19,8 @@
         <h1 class="title">최종 분석 결과</h1>
         <div class="info">
           <!-- 고객 정보 가져올거 추가해서 넣어줭 -->
-          <span>닉네임:준짱</span>
-          <span>면접일시:2023.10.16</span>
+          <span>닉네임 : 준짱</span>
+          <span id="date">면접일시 : 2023.10.30</span>
         </div>
       </div>
 
@@ -71,8 +71,8 @@
             </div>
             <div class="goDetail">
               <a
-                href="/mypage/result/answerresult/<%= v_no %>"
-                
+                href="#"
+                onclick="openPopup('/mypage/result/answerresult/<%= v_no %>');"
               >
                 <i class="fa-solid fa-play"></i>
               </a>
@@ -101,7 +101,9 @@
               const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);
               const response3 = await axios.get(`http://localhost:3001/getanswerresult/${v_no}`);
               //const response2 = await axios.get(`http://localhost:3001/geteyeresult2/${v_no}`);
+              const response4 = await axios.get(`http://localhost:3001/result/getVideo2/${v_no}`);
 
+              console.log(response4.data);
               const data = response.data.result;
 
               console.log(response2.data[0]['result']);
@@ -191,6 +193,11 @@
                 else{
                   answerfeedback.textContent = '주어진 질문에 응답하신 내용은 부적합한 응답으로 판단됩니다. 자세한 내용은 오른쪽을 클릭하세요.';
                 }
+              }
+
+              if(response4){
+                const date = document.getElementById('date');
+                date.textContent = '면접 일시 : ' + response4.data.v_date;
               }
           } catch (error) {
               console.error('Error fetching data:', error);

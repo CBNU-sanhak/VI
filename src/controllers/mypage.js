@@ -185,3 +185,16 @@ exports.getCno = async (req, res, next) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+//면접 정보 가져오기
+exports.getVideo2 = async (req, res, next) => {
+    const v_no = req.params.v_no;
+    try {
+        const result = await Video.search_video(v_no);
+        //console.log(result[0][0]);
+        res.send(result[0][0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+};

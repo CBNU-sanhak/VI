@@ -288,7 +288,7 @@ async function onPlay(){
 
 
     if(detections){ //제대로 가져왔으면
-        //눈좌표 평균 구하기위해서 얼굴인식에서 눈의 6개의 랜드마크 좌표를 가져와 평균을구한뒤 list에 넣어줬다.
+        //눈좌표 평균 구하기위해서 얼굴인식에서 눈의 6개의 랜드마크 좌표를 가져와 평균을구한뒤 list에 넣어줌
         const getLeftEye = detectionWithLandmarks.landmarks.getLeftEye();
         const getRigtEye = detectionWithLandmarks.landmarks.getRightEye();
         let left_sumX = 0; let left_sumY = 0;let right_sumX = 0; let right_sumY = 0; 
