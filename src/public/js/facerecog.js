@@ -485,20 +485,6 @@ stopBtn.addEventListener('click', async () => {
     timer_state = 0;
     message.style.display = "none";
     timerElement.textContent = "면접결과 분석중입니다.";
-    // const emotionCountsJSON = JSON.stringify(emotionCounts);
-
-    // const hiddenInput = document.createElement('input');
-    // hiddenInput.type = 'hidden';
-    // hiddenInput.name = 'emotionCounts';
-    // hiddenInput.value = emotionCountsJSON;
-
-    // //폼에 추가된 필드를 폼에 삽입
-    // form.appendChild(hiddenInput);
-    //window.location.href = "http://localhost:3000/"; 
-    //speech_sentence = "";
-    // setTimeout(function() {
-    //     window.location.href = "http://localhost:3000/";
-    // }, 2000); 
 });
 
 
@@ -506,6 +492,5 @@ stopBtn.addEventListener('click', async () => {
 document.addEventListener('finish', () => {
     stopBtn.click(); //stopBtn 클릭 이벤트 실행
     if (typeof mediaRecorder.onstop === 'function') {
-        //mediaRecorder.onstop(); //이게 문젠가?
     }
 });

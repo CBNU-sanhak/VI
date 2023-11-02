@@ -24,10 +24,9 @@ const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
 const multer = require("multer");
 
-//라우터 시험
-const interviewRoutes = require('./router/interview');  //면접페이지 라우터 추가
-const mypageRoutes = require('./router/mypage');  //마이페이지(면접기록 확인) 라우터 추가
-const errorController = require('./controllers/error'); //라우팅 에러 페이지
+const interviewRoutes = require('./router/interview');   //면접페이지 라우터 추가
+const mypageRoutes = require('./router/mypage');         //마이페이지(면접기록 확인) 라우터 추가
+const errorController = require('./controllers/error');  //라우팅 에러 페이지
 
 require("dotenv").config({path : path.join(__dirname, './env/.env')});
 
@@ -107,7 +106,6 @@ const AnswerEvaluation = require('./model/answerEvaluation');
 const axios = require('axios');
 //파일 첨부
 app.post("/file", awsUpload.single("file"), async (req, res) => {
-    //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)
     try{
         const url = req.file.location;      //동영상 url
         const c_no = req.body.c_no;            
@@ -189,122 +187,6 @@ app.post("/file", awsUpload.single("file"), async (req, res) => {
         
     }catch(err){console.log(err);}
 })
-// app.post("/file", (req, res) => {
-//     //표정평가 디비에 삽입부분(아직 /submit post요청이랑 수정안함 현재 동시에 post요청 보내는중)
-
-//     const score = parseFloat(req.body.score);   //평가점수
-
-//     console.log(score);
-//     console.log(req.body);
-//     //res.send({data: req.file.location});
-// })
-// //질문 제출 시 텍스트파일로 저장
-// app.post('/submit', (req,res) => {
-//     const blobData = req.body.videoBlob;
-//     if (blobData === null) {
-//         console.log("이상");
-//     }
-//     var sentence1 = req.body.sentence;
-//     var left_eyes = (req.body.left_eyes);
-//     var right_eyes = (req.body.right_eyes);
-//     const obj ={sentence : sentence1};
-//     var sentence = JSON.stringify(obj);
-//     console.log(sentence);
-//     console.log(req.body.score);
-//     console.log(req.body.emotionCounts);
-
-//     const fs = require('fs');    
-//     //fs.writeFileSync('video.mp4', blobData);
-//     fs.writeFileSync("test.txt", sentence);
-//     fs.writeFileSync("left_eyes.txt", left_eyes);
-//     fs.writeFileSync("right_eyes.txt", right_eyes);
-
-//     res.sendFile(__dirname +'/views/test2.html')
-// })
-
-
-// //질문 제출 시 텍스트파일로 저장
-// app.get('/submit2', (req,res) => {
-//     var sentence = req.query.sentence;
-//     //var sentence = JSON.stringify(req.body);
-//     console.log(sentence);
-
-//     const fs = require('fs');
-//     fs.writeFileSync("test.txt", sentence);
-
-//     res.sendFile(__dirname +'/views/index.html')
-// })
-
-
-
-// app.get('/getEyearray',(req,res)=>{
-//     const fs = require('fs');
-//     var data1 = fs.readFileSync('right_eyes.txt', (err,data) => {});
-//     var data2 = fs.readFileSync('left_eyes.txt', (err,data) => {});
-//     //console(data);
-   
-//     var data = { right: JSON.parse(data1), left: JSON.parse(data2)};
-//     //console.log(data);
-//     res.send(data);
-// })
-
-// app.get('/eyesresult', (req,res)=>{
-//     res.render("eyeresult");
-// })
-
-
-
-//api통신
-// app.post('/convert', (req,res)=>{
-//     const fs = require('fs');
-//     var data = fs.readFileSync('test.txt', (err,data) => {});
-//     //console(data);
-//     var dataParsed = JSON.parse(data);
-//     //var dataParsed = data;
-//     //console.log(data)
-    
-//     //res.sendFile(__dirname +'/views/test2.html')
-//     res.writeHead(200, {'Content-Type': 'text/html;charset=UTF-8'});
-//     var openApiURL = "http://aiopen.etri.re.kr:8000/WiseNLU_spoken";
- 
-//     var access_key = '725aebde-323a-4964-a231-ccde25bae07e';
-//     var analysisCode = 'ner';
-//     var text = '';
-    
-//     // 언어 분석 기술(문어)
-//     text += dataParsed.sentence;
-//     //text += "학교 가기 싫다.";
-    
-//     var requestJson = {  
-//         'argument': {
-//             'text': text,
-//             'analysis_code': analysisCode
-//         }
-//     };
-
-//     var request = require('request');
-//     var options = {
-//         url: openApiURL,
-//         body: JSON.stringify(requestJson),
-//         headers: {'Content-Type':'application/json','Authorization':access_key}
-//     };
-
-//     request.post(options, function (error, response, body) {
-//         res.write(body);
-//         /* const searchData = body.filter(object => {
-//             if (object.NAME.indexOf('NNG') > -1) {
-//               return object;
-//             }
-//             return null;
-//           });
-      
-//         res.write(searchData); */
-//     });    
-// })
-
-//12.7 추가 테스트용(api 통신 홈페이지 로드)
-app.get("/test2", (req, res) => res.sendFile(__dirname +'/views/test2.html'));
-
 
 app.get("/", (req, res) => res.sendFile(__dirname +'/views/index.html'));
 //추가
@@ -471,39 +353,6 @@ app.get('/login', (req,res)=>{
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
 
-// //현재 열린 방목록 전달함수
-// function publicRooms(){
-//     const {
-//         sockets: {
-//             adapter: {sids, rooms},
-//         },
-//     } = wsServer;
-    
-//     const publicRooms = [];
-//     let s=0;
-//     rooms.forEach((_, key) => {
-//         if(sids.get(key) === undefined){
-            
-//             for(let i=0; i<publicRooms.length; i++)
-//             {
-//                 if(key == publicRooms[i])
-//                 s=1;
-//             }
-//             if(s==0)
-//             {
-//                 publicRooms.push(key)
-//             }
-//             s=0;
-//         }
-//     })
-//     return publicRooms;
-// }
-
-
-// function countRoom(roomName){
-//     return wsServer.sockets.adapter.rooms.get(roomName)?.size;
-// }
-
 function openRooms(){
     let roomNum = roomObjArr.length;
     const openrooms = [];
@@ -518,25 +367,8 @@ function openRooms(){
 }
 
 let roomObjArr = [
-    // {
-    //   roomName,
-    //   content,
-    //   currentNum
-    //   MAXIMUM
-    //   users: [
-    //     {
-    //       socketId,
-    //     },
-    //   ],
-    //  nicknames: [
-    //      {
-    //      nickname,
-    //        },
-    //     ],
-    // },
-  ];
-//   const MAXIMUM = 4;
 
+];
 
 wsServer.on("connection", (socket) => {
     // let myRoomName = null;
