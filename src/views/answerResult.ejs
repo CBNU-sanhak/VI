@@ -176,6 +176,7 @@
 
               question_content.textContent = q_content;
               user_answer.textContent = answer;
+
               if(response2.data.result == '합격'){
                 correct_answer.textContent =  response3.data.optimal;
                 cos.textContent = "코사인 유사도 값 : " + response2.data.value.toFixed(4) + " (유사도 값이 1에 가까울 수록 좋습니다)";
@@ -185,8 +186,14 @@
                 cos.textContent = "코사인 유사도 값 : " + response2.data.value2.toFixed(4) + " (유사도 값이 1에 가까울 수록 좋습니다)";
               }
               else{
-                correct_answer.textContent =  response3.data.optimal;
-                cos.textContent = "코사인 유사도 값 : " + response2.data.value.toFixed(4) + " (유사도 값이 1에 가까울 수록 좋습니다)";
+                if(response2.data.value > response2.data.value2){
+                  correct_answer.textContent =  response3.data.optimal;
+                  cos.textContent = "코사인 유사도 값 : " + response2.data.value.toFixed(4) + " (유사도 값이 1에 가까울 수록 좋습니다)";
+                }
+                else{
+                  correct_answer.textContent =  response3.data.minimal;
+                  cos.textContent = "코사인 유사도 값 : " + response2.data.value2.toFixed(4) + " (유사도 값이 1에 가까울 수록 좋습니다)";
+                }
               }
           } catch (error) {
               console.error('Error fetching data:', error);
